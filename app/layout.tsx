@@ -3,7 +3,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { IoChatbubblesOutline, IoCameraOutline, IoPeopleOutline } from "react-icons/io5";
+import {
+  IoChatbubblesOutline,
+  IoCameraOutline,
+  IoPeopleOutline,
+  IoPersonOutline,
+} from "react-icons/io5";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,24 +41,50 @@ export default function RootLayout({
           "antialiased"
         )}
       >
-        <main className="flex-grow overflow-y-auto w-full max-w-md mx-auto bg-black">
+        <main className="flex-grow overflow-y-auto w-full max-w-md mx-auto bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
           {children}
         </main>
         {/* Bottom Navigation Bar */}
         <footer className="sticky bottom-0 z-50 h-16 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <nav className="mx-auto flex h-full max-w-md items-center justify-around">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+            {/* TODO: show chats */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground"
+            >
               <IoChatbubblesOutline className="h-6 w-6" />
               <span className="sr-only">Chats</span>
             </Button>
-            <Button variant="ghost" size="icon" className="text-primary hover:text-primary/90">
-              <IoCameraOutline className="h-7 w-7" />
-              <span className="sr-only">Camera</span>
-            </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+            <Link href="/">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <IoCameraOutline className="h-7 w-7" />
+                <span className="sr-only">Camera</span>
+              </Button>
+            </Link>
+            {/* TODO: show list of friends */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground"
+            >
               <IoPeopleOutline className="h-6 w-6" />
               <span className="sr-only">Friends</span>
             </Button>
+            <Link href="/protected">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <IoPersonOutline className="h-6 w-6" />
+                <span className="sr-only">Profile</span>
+              </Button>
+            </Link>
           </nav>
         </footer>
       </body>

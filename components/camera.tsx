@@ -29,7 +29,7 @@ export default function Camera() {
 
   if (imageSrc) {
     return (
-      <div className="relative h-full w-full">
+      <div className="relative max-w-md mx-auto w-full h-[calc(100dvh-4rem)] overflow-hidden bg-black">
         <img src={imageSrc} alt="Captured" className="h-full w-full object-cover" />
         <Button
           onClick={() => setImageSrc(null)}
