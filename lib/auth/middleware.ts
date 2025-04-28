@@ -48,6 +48,27 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // If we have a user, ensure the profile exists
+  if (user) {
+    // Check if profile exists
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+      
+    // Create profile if it doesn't exist
+    if (!existingProfile) {
+      await supabase.from('profiles').upsert({
+        id: user.id,
+        username: (user.user_metadata?.username || user.user_metadata?.name?.replace(/\s+/g, '_').toLowerCase()) || null,
+        full_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+        avatar_url: user.user_metadata?.avatar_url || null,
+        updated_at: new Date().toISOString(),
+      })
+    }
+  }
+
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:

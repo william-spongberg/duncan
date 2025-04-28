@@ -1,20 +1,45 @@
 "use client";
 
 import Webcam from "react-webcam";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { IoCameraReverseOutline } from "react-icons/io5";
+import {
+  IoCameraReverseOutline,
+  IoArrowBack,
+  IoCheckmark,
+  IoClose,
+} from "react-icons/io5";
+import { useRouter } from "next/navigation";
+import type { Group } from "@/lib/database/types";
+import { getUserGroups } from "@/lib/database/groups";
+import { uploadSnap } from "@/lib/database/snaps";
+import Image from "next/image";
 
 const videoConstraints = {
-  width: { ideal: 720 },
-  height: { ideal: 1280 },
+  width: { ideal: 1080 },
+  height: { ideal: 1920 },
   facingMode: "user",
 };
 
 export default function Camera() {
   const webcamRef = useRef<Webcam>(null);
+  const router = useRouter();
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showGroupSelect, setShowGroupSelect] = useState(false);
+
+  // Fetch user's groups
+  useEffect(() => {
+    async function fetchGroups() {
+      const userGroups = await getUserGroups();
+      setGroups(userGroups);
+    }
+
+    fetchGroups();
+  }, []);
 
   const capture = useCallback(() => {
     if (webcamRef.current) {
@@ -27,17 +52,105 @@ export default function Camera() {
     setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
   }, []);
 
+  const uploadImage = async () => {
+    if (!imageSrc || !selectedGroup) return;
+    setLoading(true);
+
+    // upload snap to db
+    await uploadSnap(selectedGroup, imageSrc);
+
+    // view image in snaps page
+    router.push("/snaps");
+    setLoading(false);
+  };
+
   if (imageSrc) {
     return (
       <div className="relative max-w-md mx-auto w-full h-[calc(100dvh-4rem)] overflow-hidden bg-black">
-        <img src={imageSrc} alt="Captured" className="h-full w-full object-cover" />
-        <Button
-          onClick={() => setImageSrc(null)}
-          variant="ghost"
-          className="absolute bottom-24 left-4 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
-        >
-          Back
-        </Button>
+        <Image
+          src={imageSrc}
+          alt="Captured"
+          layout="fill"
+          objectFit="cover"
+          className="h-full w-full"
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+          {!selectedGroup && !showGroupSelect ? (
+            <div className="flex justify-between gap-2">
+              <Button
+                onClick={() => setImageSrc(null)}
+                variant="ghost"
+                className="rounded-full bg-white/10 text-white hover:bg-white/20"
+              >
+                <IoClose className="mr-2 h-4 w-4" /> Discard
+              </Button>
+              <Button
+                onClick={() => setShowGroupSelect(true)}
+                variant="default"
+                className="rounded-full bg-white text-black hover:bg-white/90"
+              >
+                <IoArrowBack className="mr-2 h-4 w-4" /> Choose Group
+              </Button>
+            </div>
+          ) : showGroupSelect ? (
+            <div className="space-y-3">
+              <h3 className="text-white font-medium">Select a group:</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {groups.map((group) => (
+                  <Button
+                    key={group.id}
+                    onClick={() => {
+                      setSelectedGroup(group.id);
+                      setShowGroupSelect(false);
+                    }}
+                    variant="outline"
+                    className="bg-white/10 hover:bg-white/20 text-white"
+                  >
+                    {group.name}
+                  </Button>
+                ))}
+              </div>
+              {groups.length === 0 && (
+                <p className="text-white text-sm">
+                  You don&apos;t have any groups yet. Create one in the groups
+                  page.
+                </p>
+              )}
+              <Button
+                onClick={() => setShowGroupSelect(false)}
+                variant="ghost"
+                className="w-full rounded-full bg-white/10 text-white hover:bg-white/20"
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <div className="flex justify-between gap-2">
+              <Button
+                onClick={() => setSelectedGroup(null)}
+                variant="ghost"
+                className="rounded-full bg-white/10 text-white hover:bg-white/20"
+              >
+                <IoArrowBack className="mr-2 h-4 w-4" /> Back
+              </Button>
+              <Button
+                onClick={uploadImage}
+                disabled={loading}
+                variant="default"
+                className="rounded-full bg-white text-black hover:bg-white/90"
+              >
+                {loading ? (
+                  "Uploading..."
+                ) : (
+                  <>
+                    <IoCheckmark className="mr-2 h-4 w-4" /> Upload to{" "}
+                    {groups.find((g) => g.id === selectedGroup)?.name}
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     );
   }

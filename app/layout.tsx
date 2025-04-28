@@ -4,7 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
-  IoChatbubblesOutline,
+  IoImagesOutline,
   IoCameraOutline,
   IoPeopleOutline,
   IoPersonOutline,
@@ -47,15 +47,16 @@ export default function RootLayout({
         {/* Bottom Navigation Bar */}
         <footer className="sticky bottom-0 z-50 h-16 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <nav className="mx-auto flex h-full max-w-md items-center justify-around">
-            {/* TODO: show chats */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <IoChatbubblesOutline className="h-6 w-6" />
-              <span className="sr-only">Chats</span>
-            </Button>
+            <Link href="/snaps">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <IoImagesOutline className="h-6 w-6" />
+                <span className="sr-only">Images</span>
+              </Button>
+            </Link>
             <Link href="/">
               <Button
                 variant="ghost"
@@ -66,15 +67,16 @@ export default function RootLayout({
                 <span className="sr-only">Camera</span>
               </Button>
             </Link>
-            {/* TODO: show list of friends */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <IoPeopleOutline className="h-6 w-6" />
-              <span className="sr-only">Friends</span>
-            </Button>
+            <Link href="/friends">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <IoPeopleOutline className="h-6 w-6" />
+                <span className="sr-only">Friends</span>
+              </Button>
+            </Link>
             <Link href="/protected">
               <Button
                 variant="ghost"
