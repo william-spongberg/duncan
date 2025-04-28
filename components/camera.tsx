@@ -16,8 +16,8 @@ import { uploadSnap } from "@/lib/database/snaps";
 import Image from "next/image";
 
 const videoConstraints = {
-  width: { ideal: 1080 },
-  height: { ideal: 1920 },
+  width: { ideal: 1920 },
+  height: { ideal: 1080 },
   facingMode: "user",
 };
 
