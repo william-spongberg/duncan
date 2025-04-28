@@ -87,8 +87,9 @@ export default function Dashboard() {
       setProfileData(updatedProfile);
       setShowUsernamePrompt(false);
       setUsernameInput("");
-    } catch (err: any) {
-      setErrorMsg(err.message || "Failed to update username.");
+      // eslint-disable-next-line
+    } catch (error: any) {
+      setErrorMsg(error.message || "Failed to update username.");
     } finally {
       setUpdatingUsername(false);
     }
