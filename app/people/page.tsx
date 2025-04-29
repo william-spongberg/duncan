@@ -29,7 +29,7 @@ type FriendWithStatus = Profile & {
   isRequester: boolean;
 };
 
-export default function FriendsAndGroupsPage() {
+export default function People() {
   const router = useRouter();
   const [currentUserId, setCurrentUserId] = useState<string>("");
 

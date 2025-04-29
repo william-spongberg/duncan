@@ -70,7 +70,7 @@ export default function SnapsPage() {
       ) : groupsWithSnaps.length === 0 ? (
         <Card className="p-6 text-center">
           <p className="mb-4">You don&apos;t have any groups or snaps yet.</p>
-          <Link href="/friends">
+          <Link href="/people">
             <Button>Create a Group</Button>
           </Link>
         </Card>

@@ -69,7 +69,7 @@ export default function RootLayout({
                 <span className="sr-only">Camera</span>
               </Button>
             </Link>
-            <Link href="/friends">
+            <Link href="/people">
               <Button
                 variant="ghost"
                 size="icon"

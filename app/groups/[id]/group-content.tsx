@@ -153,7 +153,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
           {friends.length === 0 ? (
             <div className="text-center py-2">
               <p className="mb-2">No friends to add</p>
-              <Link href="/friends">
+              <Link href="/people">
                 <Button size="sm">Add Friends First</Button>
               </Link>
             </div>
