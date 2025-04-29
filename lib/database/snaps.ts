@@ -2,6 +2,8 @@ import { supabase } from "../auth/client";
 import type { Snap } from "./types";
 import { v4 as uuidv4 } from "uuid";
 import { getUserId } from "./user";
+import { getProfile } from "./profiles";
+import { sendGroupNotification } from "../pwa/actions";
 
 // get all snaps for a group
 export async function getGroupSnaps(groupId: string): Promise<Snap[]> {
@@ -29,6 +31,13 @@ export async function uploadSnap(
     userId = await getUserId();
   }
 
+  // get user profile
+  let { username } = await getProfile(userId);
+
+  if (!username) {
+    username = "Unknown";
+  }
+
   // convert base64 to blob
   const res = await fetch(imageSrc);
   const blob = await res.blob();
@@ -49,14 +58,25 @@ export async function uploadSnap(
   }
 
   // create new snap record in database
-  const { error } = await supabase.from("snaps").insert({
+  const { error: snapsError } = await supabase.from("snaps").insert({
     group_id: groupId,
     uploader_user_id: userId,
     storage_object_path: filePath,
   });
 
-  if (error) {
-    throw new Error("Error creating snap record: " + error.message);
+  if (snapsError) {
+    throw new Error("Error creating snap record: " + snapsError.message);
+  }
+
+  // send notification
+  const { error: notificationError } = await sendGroupNotification(
+    username,
+    groupId,
+    "New snap uploaded!"
+  );
+
+  if (notificationError) {
+    throw new Error("Error sending group notification: " + notificationError);
   }
 }
 
@@ -83,7 +103,9 @@ export async function getSnapUrl(storagePath: string): Promise<string> {
     .createSignedUrl(storagePath, 60 * 60); // 1 hour expiry
 
   if (error || !data?.signedUrl) {
-    throw new Error("Error generating signed URL: " + (error?.message || "Unknown error"));
+    throw new Error(
+      "Error generating signed URL: " + (error?.message || "Unknown error")
+    );
   }
 
   return data.signedUrl;

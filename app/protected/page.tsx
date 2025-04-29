@@ -1,6 +1,6 @@
 "use client";
 
-import { LogoutButton } from "@/components/logout-button";
+import { LogoutButton } from "@/components/auth/logout-button";
 import {
   Card,
   CardContent,
@@ -17,6 +17,8 @@ import { getUser } from "@/lib/database/user";
 import { useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { Profile } from "@/lib/database/types";
+import InstallPrompt from "@/components/pwa/install";
+import PushNotificationManager from "@/components/pwa/manager";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -116,7 +118,7 @@ export default function Dashboard() {
 
   // user profile page
   return (
-    <div className="flex flex-col h-[calc(100dvh-4rem)] w-full items-center justify-center bg-white">
+    <div className="flex flex-col min-h-[calc(100dvh-4rem)] w-full items-center justify-center bg-white">
       <div className="flex-1 flex flex-col items-center justify-center w-full">
         <Card className="w-full max-w-md bg-background/80 shadow-xl border-none">
           <CardHeader>
@@ -224,6 +226,9 @@ export default function Dashboard() {
             <LogoutButton />
           </CardFooter>
         </Card>
+
+        <PushNotificationManager />
+        <InstallPrompt />
       </div>
 
       {/* Username prompt modal/dialog */}

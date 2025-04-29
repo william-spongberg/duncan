@@ -9,3 +9,5 @@ PWA replacement for Snapchat. Uses Vercel, Next JS and Supabase.
 - [x] Add a grid for group images
 - [ ] Add notifications for snaps
 - [ ] Convert to PWA
+- [ ] Upload profile picture
+- [ ] Error handling

@@ -61,7 +61,7 @@ export async function updateSession(request: NextRequest) {
     if (!existingProfile) {
       await supabase.from('profiles').upsert({
         id: user.id,
-        username: (user.user_metadata?.username || user.user_metadata?.name?.replace(/\s+/g, '_').toLowerCase()) || null,
+        username: (user.user_metadata?.username || user.user_metadata?.name?.replace(/\s+/g, '_').toLowerCase()) || "Not set",
         full_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
         avatar_url: user.user_metadata?.avatar_url || null,
         updated_at: new Date().toISOString(),

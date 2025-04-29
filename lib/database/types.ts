@@ -36,3 +36,14 @@ export type Snap = {
 };
 
 export type SnapWithUrl = Snap & { url: string };
+
+export type Subscription = {
+  id: string;
+  user_id: string;
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+  created_at: string;
+};
