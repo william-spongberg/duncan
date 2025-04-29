@@ -10,6 +10,7 @@ import {
   IoPersonOutline,
 } from "react-icons/io5";
 import Link from "next/link";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +44,7 @@ export default function RootLayout({
       >
         <main className="flex-grow overflow-y-auto w-full max-w-md mx-auto bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
           {children}
+          <SpeedInsights />
         </main>
         {/* Bottom Navigation Bar */}
         <footer className="sticky bottom-0 z-50 h-16 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
