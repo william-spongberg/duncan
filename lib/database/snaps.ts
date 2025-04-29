@@ -6,11 +6,14 @@ import { getProfile } from "./profiles";
 import { sendGroupNotification } from "../pwa/actions";
 
 // get all snaps for a group
-export async function getGroupSnaps(groupId: string): Promise<Snap[]> {
-  const { data, error } = await supabase
-    .from("snaps")
-    .select("*")
-    .eq("group_id", groupId);
+export async function getGroupSnaps(groupId: string, count: number | null = null): Promise<Snap[]> {
+  // build query
+  let query = supabase.from("snaps").select("*").eq("group_id", groupId);
+  if (count) {
+    query = query.limit(count);
+  }
+
+  const { data, error } = await query.order("created_at", { ascending: false });
 
   if (error) {
     throw new Error("Error fetching snaps: " + error.message);

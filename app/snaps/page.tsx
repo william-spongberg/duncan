@@ -18,6 +18,7 @@ export default function SnapsPage() {
     }>
   >([]);
   const [loading, setLoading] = useState(true);
+  const snapsPerGroup = 3;
 
   useEffect(() => {
     async function fetchData() {
@@ -35,15 +36,9 @@ export default function SnapsPage() {
       }> = [];
       if (groupsData) {
         for (const group of groupsData) {
-          const groupSnaps = await getGroupSnaps(group.id);
+          const groupSnaps = await getGroupSnaps(group.id, snapsPerGroup);
           const processedSnaps = await Promise.all(
             (groupSnaps || [])
-              .sort(
-                (a, b) =>
-                  new Date(b.created_at).getTime() -
-                  new Date(a.created_at).getTime()
-              )
-              .slice(0, 20)
               .map(async (snap: Snap) => {
                 const url = await getSnapUrl(snap.storage_object_path);
                 return {
@@ -87,7 +82,7 @@ export default function SnapsPage() {
                 <h2 className="text-xl font-medium">{group.name}</h2>
                 <Link href={`/groups/${group.id}`}>
                   <Button variant="outline" size="sm">
-                    View Group
+                    See More
                   </Button>
                 </Link>
               </div>
