@@ -119,8 +119,8 @@ export default function Dashboard() {
   // user profile page
   return (
     <div className="flex flex-col min-h-[calc(100dvh-4rem)] w-full items-center justify-center bg-white">
-      <div className="flex-1 flex flex-col items-center justify-center w-full">
-        <Card className="w-full max-w-md bg-background/80 shadow-xl border-none">
+      <div className="flex-1 flex flex-col items-center justify-center w-full py-8">
+        <Card className="w-full max-w-md shadow-none border-none">
           <CardHeader>
             <div className="flex flex-col items-center gap-2">
               {profileData?.avatar_url ? (
