@@ -1,6 +1,7 @@
 {
   "name": "Duncan",
   "short_name": "Duncan",
+  "description": "Made for Helen ❤️",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -17,5 +18,7 @@
   ],
   "theme_color": "#fffc00",
   "background_color": "#fffc00",
-  "display": "standalone"
+  "display": "standalone",
+  "start_url": "/",
+  "orientation": "portrait"
 }
