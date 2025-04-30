@@ -148,8 +148,6 @@ export async function getUserGroups(
     }
   }
 
-  console.log("User groups: ", groups);
-
   await setCachedUserGroups(userId, groups);
 
   return groups;

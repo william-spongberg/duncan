@@ -11,7 +11,7 @@ import {
   IoAdd,
 } from "react-icons/io5";
 import { useEffect, useState } from "react";
-import type { Profile, Group } from "@/lib/database/types";
+import type { Profile, Group, FriendWithProfile, FriendWithStatus } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
 import {
   getFriends,
@@ -23,11 +23,6 @@ import { getUserGroups, createGroup } from "@/lib/database/groups";
 import { getUserId } from "@/lib/database/user";
 import { searchProfiles } from "@/lib/database/profiles";
 import { ProfilePicture } from "@/components/profile-picture";
-
-type FriendWithStatus = Profile & {
-  status: "pending" | "accepted" | "blocked";
-  isRequester: boolean;
-};
 
 export default function People() {
   const router = useRouter();
@@ -66,15 +61,14 @@ export default function People() {
       if (!result) {
         setFriends([]);
         setFriendsLoading(false);
-        return;
+        return; 
       }
-      const { profiles, friendData } = result;
-      const merged: FriendWithStatus[] = friendData.map((fd, idx) => {
-        const profile = profiles[idx];
-        const isRequester = fd.user_id_1 === currentUserId;
+      const friendsWithProfiles: FriendWithProfile[] = result;
+      const merged: FriendWithStatus[] = friendsWithProfiles.map((fd) => {
+        const isRequester = fd.friend.user_id_1 === currentUserId;
         return {
-          ...profile,
-          status: fd.status,
+          ...fd.profile,
+          status: fd.friend.status,
           isRequester,
         };
       });

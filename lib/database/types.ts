@@ -14,6 +14,17 @@ export type Friend = {
   accepted_at: string | null;
 };
 
+export type FriendWithProfile = {
+  friend: Friend;
+  profile: Profile;
+}
+
+export type FriendWithStatus = Profile & {
+  status: "pending" | "accepted" | "blocked";
+  isRequester: boolean;
+};
+
+
 export type Group = {
   id: string;
   name: string;
