@@ -1,6 +1,7 @@
 import { supabase } from "../auth/client";
 import type { Profile } from "./types";
 import { getUserId } from "./user";
+import { getCachedProfile, setCachedProfile, delCachedProfile } from "@/lib/cache/profiles";
 
 /**
  * Get a user's profile by ID
@@ -10,6 +11,12 @@ export async function getProfile(
 ): Promise<Profile> {
   if (!userId) {
     userId = await getUserId();
+  }
+
+  // try to get from cache
+  const cached = await getCachedProfile(userId);
+  if (cached) {
+    return cached;
   }
   
   // fetch profile from database
@@ -22,6 +29,9 @@ export async function getProfile(
   if (error) {
     throw new Error("Error fetching profile: " + error.message);
   }
+
+  // cache the profile
+  await setCachedProfile(userId, data);
 
   return data;
 }
@@ -46,6 +56,9 @@ export async function updateProfileUsername(
     throw new Error("Error updating profile: " + error.message);
   }
 
+  // update cache
+  await setCachedProfile(userId, { ...data, username });
+
   return data;
 }
 
@@ -64,6 +77,9 @@ export async function upsertProfile(
   if (error) {
     throw new Error("Error upserting profile: " + error.message);
   }
+
+  // invalidate cache
+  await delCachedProfile(profile.id);
 
   return data;
 }
