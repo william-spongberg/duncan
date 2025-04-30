@@ -11,12 +11,12 @@ import {
 } from "@/lib/database/groups";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { IoPersonAdd, IoCamera } from "react-icons/io5";
 import type { Group, GroupMember, Profile, Snap } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
 import { SnapPreviews } from "@/components/snap";
+import { ProfilePicture } from "@/components/profile-picture";
 type SnapWithUrl = Snap & { url: string };
 
 interface GroupContentProps {
@@ -180,7 +180,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
                 >
                   {friends.map((friend) => (
                     <option key={friend.id} value={friend.id}>
-                      {friend.username || friend.full_name || friend.id}
+                      {friend.username || friend.id}
                     </option>
                   ))}
                 </select>
@@ -217,20 +217,12 @@ export default function GroupContent({ groupId }: GroupContentProps) {
               key={member.id}
               className="flex items-center gap-2 bg-gray-50 rounded-full px-3 py-1"
             >
-              {member.avatar_url && (
-                <div className="w-6 h-6 rounded-full overflow-hidden">
-                  <Image
-                    src={member.avatar_url}
-                    alt={member.username || "Member"}
-                    width={24}
-                    height={24}
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              <span className="text-sm">
-                {member.username || member.full_name || "User"}
-              </span>
+              <ProfilePicture
+                src={member.avatar_url}
+                username={member.username}
+                size="sm"
+              />
+              <span className="text-sm">{member.username || "User"}</span>
             </div>
           ))}
         </div>

@@ -4,12 +4,10 @@ import { LogoutButton } from "@/components/auth/logout-button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
 import { getProfile, updateProfileUsername } from "@/lib/database/profiles";
 import { getUserGroupsCount } from "@/lib/database/groups";
 import { getFriendCount } from "@/lib/database/friends";
@@ -19,6 +17,7 @@ import { User } from "@supabase/supabase-js";
 import { Profile } from "@/lib/database/types";
 import InstallPrompt from "@/components/pwa/install";
 import PushNotificationManager from "@/components/pwa/manager";
+import { ProfilePicture } from "@/components/profile-picture";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -70,7 +69,11 @@ export default function Dashboard() {
 
   // Prompt for username if not set
   useEffect(() => {
-    if (!loading && user && (!profileData?.username || profileData.username.trim() === "")) {
+    if (
+      !loading &&
+      user &&
+      (!profileData?.username || profileData.username.trim() === "")
+    ) {
       setShowUsernamePrompt(true);
     }
   }, [loading, user, profileData]);
@@ -123,41 +126,17 @@ export default function Dashboard() {
         <Card className="w-full max-w-md shadow-none border-none">
           <CardHeader>
             <div className="flex flex-col items-center gap-2">
-              {profileData?.avatar_url ? (
-                <Image
-                  src={profileData.avatar_url}
-                  alt="User avatar"
-                  width={80}
-                  height={80}
-                  className="h-20 w-20 rounded-full border-2 border-primary"
-                />
-              ) : (
-                <div className="h-20 w-20 rounded-full border-2 border-primary bg-gray-200 flex items-center justify-center">
-                  <span className="text-xl font-bold text-gray-500">
-                    {(profileData?.username ||
-                      profileData?.full_name ||
-                      user.user_metadata.name ||
-                      user.email ||
-                      "?")[0].toUpperCase()}
-                  </span>
-                </div>
-              )}
+              <ProfilePicture
+                src={profileData?.avatar_url}
+                username={profileData?.username}
+                size="xl"
+              />
               <CardTitle className="text-2xl">
-                {profileData?.username ||
-                  profileData?.full_name ||
-                  user.user_metadata.name ||
-                  "User"}
+                {profileData?.username || profileData?.full_name || "User"}
               </CardTitle>
-              {profileData?.username &&
-                profileData?.full_name &&
-                profileData.username !== profileData.full_name && (
-                  <CardDescription className="text-center">
-                    {profileData.full_name}
-                  </CardDescription>
-                )}
-              <CardDescription className="text-center">
-                {user.email}
-              </CardDescription>
+                <div className="text-xs text-muted-foreground">
+                {user.id}
+                </div>
             </div>
           </CardHeader>
 
@@ -196,11 +175,15 @@ export default function Dashboard() {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Full name:</span>
+                <span className="text-muted-foreground">Full Name:</span>
                 <span className="font-medium">
-                  {profileData?.full_name ||
-                    user.user_metadata.name ||
-                    "Not set"}
+                  {profileData?.full_name || "Not set"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Email:</span>
+                <span className="font-medium">
+                  {user.email}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -211,12 +194,6 @@ export default function Dashboard() {
                   {profileData?.updated_at
                     ? new Date(profileData.updated_at).toLocaleDateString()
                     : "Never"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">ID:</span>
-                <span className="text-xs text-gray-500 max-w-[180px] truncate">
-                  {user.id}
                 </span>
               </div>
             </div>
@@ -240,7 +217,7 @@ export default function Dashboard() {
               className="border rounded px-3 py-2 focus:outline-none focus:ring w-full"
               type="text"
               value={usernameInput}
-              onChange={e => setUsernameInput(e.target.value)}
+              onChange={(e) => setUsernameInput(e.target.value)}
               placeholder="Enter username"
               disabled={updatingUsername}
               autoFocus
