@@ -68,6 +68,8 @@ export async function sendNotification(
       JSON.stringify({
         title: title,
         body: message,
+        icon: "/public/web-app-manifest-192x192.png",
+        badge: "/public/badge-192x192.png",
       })
     );
     return { success: true };
