@@ -1,9 +1,16 @@
 import { supabase } from "@/lib/auth/client";
 import type { Group, GroupMember } from "./types";
 import { getUserId } from "./user";
+import { getCachedGroup, setCachedGroup, delCachedGroup } from "@/lib/cache/groups";
 
 // get group
 export async function getGroup(groupId: string): Promise<Group | null> {
+  // Try to get from cache
+  const cached = await getCachedGroup(groupId);
+  if (cached) {
+    return cached;
+  }
+
   const { data, error } = await supabase
     .from("groups")
     .select("*")
@@ -13,6 +20,9 @@ export async function getGroup(groupId: string): Promise<Group | null> {
   if (error) {
     throw new Error("Error fetching group: " + error.message);
   }
+
+
+  await setCachedGroup(groupId, data);
 
   return data;
 }
@@ -43,6 +53,9 @@ export async function createGroup(
     user_id: createdBy,
   });
 
+  // Cache the group
+  await setCachedGroup(data.id, data);
+
   return data;
 }
 
@@ -69,6 +82,9 @@ export async function addGroupMember(
   if (error) {
     throw new Error("Error adding group member: " + error.message);
   }
+
+  // invalidate cache
+  await delCachedGroup(groupId);
 
   return data;
 }
