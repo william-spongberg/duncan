@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { IoPersonAdd, IoCamera } from "react-icons/io5";
 import type { Group, GroupMember, Profile, Snap } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
+import { SnapPreviews } from "@/components/snap";
 type SnapWithUrl = Snap & { url: string };
 
 interface GroupContentProps {
@@ -45,7 +46,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
       }
       setGroup(groupData);
 
-      // Get all group members (get user_ids, then getProfile for each)
+      // get all group members (get user_ids, then getProfile for each)
       const groupMembers = await getGroupMembers(groupId);
       const memberIds: string[] =
         groupMembers?.map((member: GroupMember) => member.user_id) || [];
@@ -54,7 +55,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
       ).filter(Boolean) as Profile[];
       setMembers(memberProfiles);
 
-      // Get group snaps
+      // get group snaps
       const groupSnaps = await getGroupSnaps(groupId);
       let snapsWithUrls: SnapWithUrl[] = [];
       if (groupSnaps) {
@@ -71,14 +72,15 @@ export default function GroupContent({ groupId }: GroupContentProps) {
     fetchGroupData();
   }, [groupId, router]);
 
-  // Get friends who aren't members when showing the add member form
+  // get friends who aren't members when showing the add member form
   useEffect(() => {
     if (!showAddMemberForm || !group) return;
     async function fetchFriends() {
       const friendsResult = await getFriends("accepted");
       if (!friendsResult) return;
+
+      // filter out friends who are already members
       const friendProfiles: Profile[] = friendsResult.profiles;
-      // Filter out friends who are already members
       const memberIds = members.map((m) => m.id);
       const nonMemberFriends = friendProfiles.filter(
         (friend) => !memberIds.includes(friend.id)
@@ -88,9 +90,11 @@ export default function GroupContent({ groupId }: GroupContentProps) {
         setSelectedFriend(nonMemberFriends[0].id);
       }
     }
+
     fetchFriends();
   }, [showAddMemberForm, group, members]);
 
+  // add member to group
   const addMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFriend || !group) return;
@@ -245,23 +249,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
             </Link>
           </Card>
         ) : (
-          <div className="grid grid-cols-3 gap-2">
-            {snaps.map((snap) => (
-              <Link
-                key={snap.id}
-                href={`/snaps/${snap.id}`}
-                className="relative aspect-square bg-gray-100 rounded-md overflow-hidden"
-              >
-                <Image
-                  src={snap.url}
-                  alt="Snap"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 33vw, 150px"
-                />
-              </Link>
-            ))}
-          </div>
+          <SnapPreviews snaps={snaps} />
         )}
       </div>
     </div>

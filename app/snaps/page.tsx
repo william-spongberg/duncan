@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { getUserGroups } from "@/lib/database/groups";
 import { getSnapUrl, getGroupSnaps } from "@/lib/database/snaps";
 import type { Snap, SnapWithUrl } from "@/lib/database/types";
+import { SnapPreviews } from "@/components/snap";
 
 export default function SnapsPage() {
   const [groupsWithSnaps, setGroupsWithSnaps] = useState<
@@ -18,10 +18,11 @@ export default function SnapsPage() {
     }>
   >([]);
   const [loading, setLoading] = useState(true);
+
   const snapsPerGroup = 3;
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchSnaps() {
       setLoading(true);
       const groupsData = await getUserGroups();
       const result: Array<{
@@ -34,18 +35,19 @@ export default function SnapsPage() {
           }
         >;
       }> = [];
+
+      // get snaps for each group
       if (groupsData) {
         for (const group of groupsData) {
           const groupSnaps = await getGroupSnaps(group.id, snapsPerGroup);
           const processedSnaps = await Promise.all(
-            (groupSnaps || [])
-              .map(async (snap: Snap) => {
-                const url = await getSnapUrl(snap.storage_object_path);
-                return {
-                  ...snap,
-                  url: url,
-                } as SnapWithUrl;
-              })
+            (groupSnaps || []).map(async (snap: Snap) => {
+              const url = await getSnapUrl(snap.storage_object_path);
+              return {
+                ...snap,
+                url: url,
+              } as SnapWithUrl;
+            })
           );
           result.push({
             id: group.id,
@@ -57,7 +59,8 @@ export default function SnapsPage() {
       setGroupsWithSnaps(result);
       setLoading(false);
     }
-    fetchData();
+
+    fetchSnaps();
   }, []);
 
   return (
@@ -91,23 +94,7 @@ export default function SnapsPage() {
                   No snaps in this group yet.
                 </p>
               ) : (
-                <div className="grid grid-cols-3 gap-2">
-                  {group.snaps.map((snap) => (
-                    <Link
-                      key={snap.id}
-                      href={`/snaps/${snap.id}`}
-                      className="relative aspect-square bg-gray-100 rounded-md overflow-hidden"
-                    >
-                      <Image
-                        src={snap.url}
-                        alt="Snap"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 33vw, 150px"
-                      />
-                    </Link>
-                  ))}
-                </div>
+                <SnapPreviews snaps={group.snaps} />
               )}
             </div>
           ))}
