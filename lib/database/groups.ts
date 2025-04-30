@@ -1,11 +1,19 @@
 import { supabase } from "@/lib/auth/client";
 import type { Group, GroupMember } from "./types";
 import { getUserId } from "./user";
-import { getCachedGroup, setCachedGroup, delCachedGroup } from "@/lib/cache/groups";
+import {
+  getCachedGroup,
+  setCachedGroup,
+  getCachedGroupMembers,
+  setCachedGroupMembers,
+  delCachedGroupMembers,
+  getCachedUserGroups,
+  setCachedUserGroups,
+} from "@/lib/cache/groups";
 
 // get group
 export async function getGroup(groupId: string): Promise<Group | null> {
-  // Try to get from cache
+  // try to get from cache
   const cached = await getCachedGroup(groupId);
   if (cached) {
     return cached;
@@ -20,7 +28,6 @@ export async function getGroup(groupId: string): Promise<Group | null> {
   if (error) {
     throw new Error("Error fetching group: " + error.message);
   }
-
 
   await setCachedGroup(groupId, data);
 
@@ -65,33 +72,31 @@ export async function createGroup(
 export async function addGroupMember(
   groupId: string,
   userId: string | null = null
-): Promise<GroupMember | null> {
+): Promise<void> {
   if (!userId) {
     userId = await getUserId();
   }
 
-  const { data, error } = await supabase
-    .from("group_members")
-    .insert({
-      group_id: groupId,
-      user_id: userId,
-    })
-    .select()
-    .single();
+  const { error } = await supabase.from("group_members").insert({
+    group_id: groupId,
+    user_id: userId,
+  });
 
   if (error) {
     throw new Error("Error adding group member: " + error.message);
   }
 
   // invalidate cache
-  await delCachedGroup(groupId);
-
-  return data;
+  await delCachedGroupMembers(groupId);
 }
 
-export async function getGroupMembers(
-  groupId: string
-): Promise<GroupMember[]> {
+export async function getGroupMembers(groupId: string): Promise<GroupMember[]> {
+  // try to get from cache
+  const cached = await getCachedGroupMembers(groupId);
+  if (cached) {
+    return cached;
+  }
+
   const { data, error } = await supabase
     .from("group_members")
     .select("*")
@@ -100,6 +105,8 @@ export async function getGroupMembers(
   if (error) {
     throw new Error("Error fetching group members: " + error.message);
   }
+
+  await setCachedGroupMembers(groupId, data);
 
   return data;
 }
@@ -113,28 +120,39 @@ export async function getUserGroups(
   if (!userId) {
     userId = await getUserId();
   }
-  
+
+  // try to get from cache
+  const cached = await getCachedUserGroups(userId);
+  if (cached) {
+    return cached;
+  }
+
+  // fetch group members for user
   const { data, error } = await supabase
     .from("group_members")
-    .select(
-      `
-      group_id,
-      groups:groups(id, name, created_at, created_by)
-    `
-    )
+    .select("*")
     .eq("user_id", userId);
 
   if (error) {
     throw new Error("Error fetching user groups: " + error.message);
   }
 
-  if (!data || data.length === 0) {
-    return [];
+  const groupMembers: GroupMember[] = data;
+  const groups: Group[] = [];
+
+  // fetch groups for each group user is a member of
+  for (const member of groupMembers) {
+    const group = await getGroup(member.group_id);
+    if (group) {
+      groups.push(group);
+    }
   }
 
-  // Extract groups from the nested structure
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return data.map((item: any) => item.groups) as Group[];
+  console.log("User groups: ", groups);
+
+  await setCachedUserGroups(userId, groups);
+
+  return groups;
 }
 
 // get number of groups for a user
@@ -144,7 +162,13 @@ export async function getUserGroupsCount(
   if (!userId) {
     userId = await getUserId();
   }
-  
+
+  // try to get from cache
+  const cached = await getCachedUserGroups(userId);
+  if (cached) {
+    return cached.length;
+  }
+
   const groups = await getUserGroups(userId);
   return groups ? groups.length : 0;
 }
