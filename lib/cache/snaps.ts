@@ -42,3 +42,19 @@ export async function getCachedSnap(snapId: string): Promise<Snap | null> {
 export async function setCachedSnap(snapId: string, snap: Snap): Promise<void> {
   await set(`snap_${snapId}`, snap);
 }
+
+export async function getCachedSnapUrl(storagePath: string): Promise<string | null> {
+  const cached = await get(`snap_url_${storagePath}`);
+  if (cached) {
+    console.log("Cache hit for snap URL!");
+    return cached;
+  }
+  return null;
+}
+
+export async function setCachedSnapUrl(
+  storagePath: string,
+  url: string
+): Promise<void> {
+  await set(`snap_url_${storagePath}`, url);
+}

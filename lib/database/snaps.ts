@@ -4,7 +4,15 @@ import { v4 as uuidv4 } from "uuid";
 import { getUserId } from "./user";
 import { getProfile } from "./profiles";
 import { sendGroupNotification } from "../pwa/actions";
-import { getCachedGroupSnaps, setCachedGroupSnaps, delCachedGroupSnaps, getCachedSnap, setCachedSnap } from "../cache/snaps";
+import {
+  getCachedGroupSnaps,
+  setCachedGroupSnaps,
+  delCachedGroupSnaps,
+  getCachedSnap,
+  setCachedSnap,
+  getCachedSnapUrl,
+  setCachedSnapUrl,
+} from "../cache/snaps";
 
 // get all snaps for a group
 export async function getGroupSnaps(
@@ -120,16 +128,33 @@ export async function getSnap(snapId: string): Promise<Snap> {
  * Get a public URL for a snap/image
  */
 export async function getSnapUrl(storagePath: string): Promise<string> {
-  // TODO: option here to download the image instead of just the link?? could store in local
+  // try cache first
+  const cached = await getCachedSnapUrl(storagePath);
+  if (cached) {
+    return cached;
+  }
+
+  // download the file from storage
   const { data, error } = await supabase.storage
     .from("snaps")
-    .createSignedUrl(storagePath, 24 * 60); // 24 hour expiry
+    .download(storagePath);
 
-  if (error || !data?.signedUrl) {
+  if (error || !data) {
     throw new Error(
-      "Error generating signed URL: " + (error?.message || "Unknown error")
+      "Error downloading image: " + (error?.message || "Unknown error")
     );
   }
 
-  return data.signedUrl;
+  // create data url from blob
+  const reader = new FileReader();
+  const blob = new Blob([data], { type: "image/jpeg" });
+  reader.readAsDataURL(blob);
+
+  return new Promise((resolve) => {
+    reader.onloadend = () => {
+      const base64data = reader.result as string;
+      setCachedSnapUrl(storagePath, base64data);
+      resolve(base64data);
+    };
+  });
 }
