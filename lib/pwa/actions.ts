@@ -12,6 +12,7 @@ webpush.setVapidDetails(
 
 // send notification to all group members when a snap is posted
 export async function sendGroupNotification(
+  userId: string,
   username: string,
   groupId: string,
   message: string
@@ -26,9 +27,10 @@ export async function sendGroupNotification(
   if (groupError) return { success: false, error: groupError.message };
   if (!groupMembers) return { success: false, error: "No group members found" };
 
-  // Get all subscriptions for these users
+  // Get all subscriptions for these users, excluding the user who posted the snap
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userIds = groupMembers.map((m: any) => m.user_id);
+  const userIds = groupMembers.map((member: any) => member.user_id);
+  userIds.filter((id: string) => id !== userId);
   const { data: subscriptions, error: subError } = await supabase
     .from("subscriptions")
     .select("endpoint, keys")
