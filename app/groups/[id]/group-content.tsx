@@ -80,7 +80,9 @@ export default function GroupContent({ groupId }: GroupContentProps) {
       if (!friendsResult) return;
 
       // filter out friends who are already members
-      const friendProfiles: Profile[] = friendsResult.profiles;
+      const friendProfiles: Profile[] = friendsResult.map(
+        (friend) => friend.profile
+      );
       const memberIds = members.map((m) => m.id);
       const nonMemberFriends = friendProfiles.filter(
         (friend) => !memberIds.includes(friend.id)
