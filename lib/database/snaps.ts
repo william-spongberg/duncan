@@ -73,6 +73,7 @@ export async function uploadSnap(
 
   // send notification
   const { error: notificationError } = await sendGroupNotification(
+    userId,
     username,
     groupId,
     "New snap uploaded!"
@@ -103,7 +104,7 @@ export async function getSnap(snapId: string): Promise<Snap> {
 export async function getSnapUrl(storagePath: string): Promise<string> {
   const { data, error } = await supabase.storage
     .from("snaps")
-    .createSignedUrl(storagePath, 60 * 60); // 1 hour expiry
+    .createSignedUrl(storagePath, 24 * 60); // 24 hour expiry
 
   if (error || !data?.signedUrl) {
     throw new Error(
