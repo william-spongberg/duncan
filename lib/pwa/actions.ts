@@ -68,7 +68,7 @@ export async function sendNotification(
       JSON.stringify({
         title: title,
         body: message,
-        badge: "/icon1.png",
+        badge: "/icon1.svg",
       })
     );
     return { success: true };
