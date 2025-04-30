@@ -9,6 +9,7 @@ import {
   IoClose,
   IoSearch,
   IoAdd,
+  IoArrowForward,
 } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import type { Profile, Group, FriendWithProfile, FriendWithStatus } from "@/lib/database/types";
@@ -175,7 +176,7 @@ export default function People() {
   const acceptedFriends = friends.filter((f) => f.status === "accepted");
 
   return (
-    <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+    <div className="min-h-svh p-4 max-w-lg mx-auto">
       {/* Groups Section */}
       <div>
         <div className="flex justify-between items-center mb-6">
@@ -240,7 +241,7 @@ export default function People() {
           <div className="space-y-4">
             {groups.map((group) => (
               <Link href={`/groups/${group.id}`} key={group.id}>
-                <Card className="p-4 hover:bg-gray-50 transition-colors">
+                <Card className="p-4 hover:bg-muted transition-colors">
                   <div className="flex justify-between items-center">
                     <div>
                       <h2 className="text-lg font-medium">{group.name}</h2>
@@ -249,8 +250,8 @@ export default function People() {
                         {new Date(group.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <IoPersonAdd size={16} /> Manage
+                    <Button variant="ghost" size="sm" className="gap-1">
+                      <IoArrowForward />
                     </Button>
                   </div>
                 </Card>

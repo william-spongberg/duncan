@@ -15,7 +15,7 @@ export function SnapPreviews({ snaps }: SnapPreviewsProps) {
         <Link
           key={snap.id}
           href={`/snaps/${snap.id}`}
-          className="relative aspect-square bg-gray-100 rounded-md overflow-hidden"
+          className="relative aspect-square rounded-md overflow-hidden"
         >
           <SnapDisplay imageUrl={snap.url} isSmall={true} />
         </Link>

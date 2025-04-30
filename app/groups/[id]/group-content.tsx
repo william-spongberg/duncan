@@ -115,7 +115,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
 
   if (loading) {
     return (
-      <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+      <div className="min-h-svh  p-4 max-w-lg mx-auto">
         <div className="text-center py-10">Loading group...</div>
       </div>
     );
@@ -123,7 +123,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
 
   if (!group) {
     return (
-      <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+      <div className="min-h-svh  p-4 max-w-lg mx-auto">
         <div className="text-center py-10">Group not found</div>
         <Link href="/groups">
           <Button>Back to Groups</Button>
@@ -133,7 +133,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
   }
 
   return (
-    <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+    <div className="min-h-svh  p-4 max-w-lg mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{group.name}</h1>
         <div className="flex gap-2">
@@ -217,7 +217,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
           {members.map((member) => (
             <div
               key={member.id}
-              className="flex items-center gap-2 bg-gray-50 rounded-full px-3 py-1"
+              className="flex items-center gap-2 bg-muted rounded-full px-1 py-1"
             >
               <ProfilePicture
                 src={member.avatar_url}

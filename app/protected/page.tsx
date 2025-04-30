@@ -18,6 +18,7 @@ import { Profile } from "@/lib/database/types";
 import InstallPrompt from "@/components/pwa/install";
 import PushNotificationManager from "@/components/pwa/manager";
 import { ProfilePicture } from "@/components/profile-picture";
+import { ModeToggle } from "@/components/theme-toggle";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -103,7 +104,7 @@ export default function Dashboard() {
   if (loading) {
     // Optional: Render a loading state
     return (
-      <div className="flex flex-col h-[calc(100dvh-4rem)] w-full items-center justify-center bg-white">
+      <div className="flex flex-col h-[calc(100dvh-4rem)] w-full items-center justify-center">
         Loading...
       </div>
     );
@@ -112,7 +113,7 @@ export default function Dashboard() {
   if (!user) {
     // Optional: Render a state for when user is not available
     return (
-      <div className="flex flex-col h-[calc(100dvh-4rem)] w-full items-center justify-center bg-white">
+      <div className="flex flex-col h-[calc(100dvh-4rem)] w-full items-center justify-center">
         User not found. Please log in again.
         <LogoutButton />
       </div>
@@ -121,7 +122,7 @@ export default function Dashboard() {
 
   // user profile page
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-4rem)] w-full items-center justify-center bg-white">
+    <div className="flex flex-col min-h-[calc(100dvh-4rem)] w-full items-center justify-center">
       <div className="flex-1 flex flex-col items-center justify-center w-full py-8">
         <Card className="w-full max-w-md shadow-none border-none">
           <CardHeader>
@@ -134,23 +135,21 @@ export default function Dashboard() {
               <CardTitle className="text-2xl">
                 {profileData?.username || profileData?.full_name || "User"}
               </CardTitle>
-                <div className="text-xs text-muted-foreground">
-                {user.id}
-                </div>
+              <div className="text-xs text-muted-foreground">{user.id}</div>
             </div>
           </CardHeader>
 
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="p-3 rounded-lg">
                 <div className="text-2xl font-bold">{groupsCount}</div>
                 <div className="text-xs text-muted-foreground">Groups</div>
               </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="p-3 rounded-lg">
                 <div className="text-2xl font-bold">{friendsCount}</div>
                 <div className="text-xs text-muted-foreground">Friends</div>
               </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="p-3 rounded-lg">
                 <div className="text-2xl font-bold">{pendingRequestsCount}</div>
                 <div className="text-xs text-muted-foreground">Requests</div>
               </div>
@@ -182,9 +181,7 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Email:</span>
-                <span className="font-medium">
-                  {user.email}
-                </span>
+                <span className="font-medium">{user.email}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">
@@ -200,7 +197,10 @@ export default function Dashboard() {
           </CardContent>
 
           <CardFooter className="flex justify-center">
+            <div className="flex-1" />
             <LogoutButton />
+            <div className="flex-1" />
+            <ModeToggle />
           </CardFooter>
         </Card>
 
@@ -210,8 +210,8 @@ export default function Dashboard() {
 
       {/* Username prompt modal/dialog */}
       {showUsernamePrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs flex flex-col gap-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="bg-background rounded-lg shadow-lg p-6 w-full max-w-xs flex flex-col gap-3">
             <h2 className="text-lg font-semibold mb-2">Set your username</h2>
             <input
               className="border rounded px-3 py-2 focus:outline-none focus:ring w-full"
@@ -225,14 +225,14 @@ export default function Dashboard() {
             {errorMsg && <div className="text-red-500 text-xs">{errorMsg}</div>}
             <div className="flex gap-2 mt-2">
               <button
-                className="flex-1 bg-primary text-white rounded px-3 py-2 disabled:opacity-50"
+                className="flex-1 bg-primary rounded px-3 py-2 disabled:opacity-50"
                 onClick={handleUsernameChange}
                 disabled={updatingUsername}
               >
                 {updatingUsername ? "Saving..." : "Save"}
               </button>
               <button
-                className="flex-1 bg-gray-200 rounded px-3 py-2"
+                className="flex-1 bg-muted rounded px-3 py-2"
                 onClick={() => setShowUsernamePrompt(false)}
                 disabled={updatingUsername}
               >

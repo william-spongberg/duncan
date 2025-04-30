@@ -64,7 +64,7 @@ export default function SnapsPage() {
   }, []);
 
   return (
-    <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+    <div className="min-h-svh  p-4 max-w-lg mx-auto">
       <h1 className="text-2xl font-bold mb-6">Your Snaps</h1>
       {loading ? (
         <Card className="p-6 text-center">
