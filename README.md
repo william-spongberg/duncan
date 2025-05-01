@@ -18,3 +18,4 @@ PWA replacement for Snapchat. Uses Vercel, Next JS and Supabase.
 - [ ] Enable swiping between pages
 - [ ] Add text input to images by using the Canvas API. Attach text to images by adding a new column to the snaps table containing a string array. Or, if possible, save text data with image rather than attaching to table.
 - [ ] Fix width extending past display port. Fix by wrapping in max-w-dvw in layout.tsx.
+- [ ] Always keep camera open to avoid delay
