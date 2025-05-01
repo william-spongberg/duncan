@@ -11,11 +11,12 @@ import {
 } from "@/lib/database/groups";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { IoPersonAdd, IoCamera } from "react-icons/io5";
 import type { Group, GroupMember, Profile, Snap } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
+import { SnapPreviews } from "@/components/snap";
+import { ProfilePicture } from "@/components/profile-picture";
 type SnapWithUrl = Snap & { url: string };
 
 interface GroupContentProps {
@@ -45,7 +46,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
       }
       setGroup(groupData);
 
-      // Get all group members (get user_ids, then getProfile for each)
+      // get all group members (get user_ids, then getProfile for each)
       const groupMembers = await getGroupMembers(groupId);
       const memberIds: string[] =
         groupMembers?.map((member: GroupMember) => member.user_id) || [];
@@ -54,7 +55,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
       ).filter(Boolean) as Profile[];
       setMembers(memberProfiles);
 
-      // Get group snaps
+      // get group snaps
       const groupSnaps = await getGroupSnaps(groupId);
       let snapsWithUrls: SnapWithUrl[] = [];
       if (groupSnaps) {
@@ -71,14 +72,17 @@ export default function GroupContent({ groupId }: GroupContentProps) {
     fetchGroupData();
   }, [groupId, router]);
 
-  // Get friends who aren't members when showing the add member form
+  // get friends who aren't members when showing the add member form
   useEffect(() => {
     if (!showAddMemberForm || !group) return;
     async function fetchFriends() {
       const friendsResult = await getFriends("accepted");
       if (!friendsResult) return;
-      const friendProfiles: Profile[] = friendsResult.profiles;
-      // Filter out friends who are already members
+
+      // filter out friends who are already members
+      const friendProfiles: Profile[] = friendsResult.map(
+        (friend) => friend.profile
+      );
       const memberIds = members.map((m) => m.id);
       const nonMemberFriends = friendProfiles.filter(
         (friend) => !memberIds.includes(friend.id)
@@ -88,9 +92,11 @@ export default function GroupContent({ groupId }: GroupContentProps) {
         setSelectedFriend(nonMemberFriends[0].id);
       }
     }
+
     fetchFriends();
   }, [showAddMemberForm, group, members]);
 
+  // add member to group
   const addMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFriend || !group) return;
@@ -109,7 +115,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
 
   if (loading) {
     return (
-      <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+      <div className="min-h-svh  p-4 max-w-lg mx-auto">
         <div className="text-center py-10">Loading group...</div>
       </div>
     );
@@ -117,7 +123,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
 
   if (!group) {
     return (
-      <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+      <div className="min-h-svh  p-4 max-w-lg mx-auto">
         <div className="text-center py-10">Group not found</div>
         <Link href="/groups">
           <Button>Back to Groups</Button>
@@ -127,7 +133,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
   }
 
   return (
-    <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+    <div className="min-h-svh  p-4 max-w-lg mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{group.name}</h1>
         <div className="flex gap-2">
@@ -176,7 +182,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
                 >
                   {friends.map((friend) => (
                     <option key={friend.id} value={friend.id}>
-                      {friend.username || friend.full_name || friend.id}
+                      {friend.username || friend.id}
                     </option>
                   ))}
                 </select>
@@ -211,22 +217,14 @@ export default function GroupContent({ groupId }: GroupContentProps) {
           {members.map((member) => (
             <div
               key={member.id}
-              className="flex items-center gap-2 bg-gray-50 rounded-full px-3 py-1"
+              className="flex items-center gap-2 bg-muted rounded-full px-1 py-1"
             >
-              {member.avatar_url && (
-                <div className="w-6 h-6 rounded-full overflow-hidden">
-                  <Image
-                    src={member.avatar_url}
-                    alt={member.username || "Member"}
-                    width={24}
-                    height={24}
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              <span className="text-sm">
-                {member.username || member.full_name || "User"}
-              </span>
+              <ProfilePicture
+                src={member.avatar_url}
+                username={member.username}
+                size="sm"
+              />
+              <span className="text-sm">{member.username || "User"}</span>
             </div>
           ))}
         </div>
@@ -245,23 +243,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
             </Link>
           </Card>
         ) : (
-          <div className="grid grid-cols-3 gap-2">
-            {snaps.map((snap) => (
-              <Link
-                key={snap.id}
-                href={`/snaps/${snap.id}`}
-                className="relative aspect-square bg-gray-100 rounded-md overflow-hidden"
-              >
-                <Image
-                  src={snap.url}
-                  alt="Snap"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 33vw, 150px"
-                />
-              </Link>
-            ))}
-          </div>
+          <SnapPreviews snaps={snaps} />
         )}
       </div>
     </div>

@@ -3,8 +3,8 @@ self.addEventListener("push", function (event) {
     const data = event.data.json();
     const options = {
       body: data.body,
-      icon: data.icon || "/web-app-manifest-512x512.png",
-      badge: "/web-app-manifest-192x192.png",
+      icon: "/badge.png",
+      badge: data.badge,
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
@@ -17,5 +17,5 @@ self.addEventListener("push", function (event) {
 
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
-  event.waitUntil(clients.openWindow("https://duncan.spongberg.dev/"));
+  event.waitUntil(clients.openWindow("https://duncan.spongberg.dev/snaps"));
 });

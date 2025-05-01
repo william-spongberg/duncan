@@ -11,4 +11,8 @@ PWA replacement for Snapchat. Uses Vercel, Next JS and Supabase.
 - [x] Convert to PWA
 - [ ] Upload profile picture
 - [ ] Error handling
-- [ ] Add caching using Vercel edge functions
+- [x] Add caching
+- [ ] Add skeleton loading
+- [ ] Fix stale image cache on /snaps
+- [ ] Make icons at bottom bigger
+- [ ] Enable swiping between pages

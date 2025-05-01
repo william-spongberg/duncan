@@ -1,7 +1,6 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,9 +9,10 @@ import {
   IoClose,
   IoSearch,
   IoAdd,
+  IoArrowForward,
 } from "react-icons/io5";
 import { useEffect, useState } from "react";
-import type { Profile, Group } from "@/lib/database/types";
+import type { Profile, Group, FriendWithProfile, FriendWithStatus } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
 import {
   getFriends,
@@ -23,11 +23,7 @@ import {
 import { getUserGroups, createGroup } from "@/lib/database/groups";
 import { getUserId } from "@/lib/database/user";
 import { searchProfiles } from "@/lib/database/profiles";
-
-type FriendWithStatus = Profile & {
-  status: "pending" | "accepted" | "blocked";
-  isRequester: boolean;
-};
+import { ProfilePicture } from "@/components/profile-picture";
 
 export default function People() {
   const router = useRouter();
@@ -66,15 +62,14 @@ export default function People() {
       if (!result) {
         setFriends([]);
         setFriendsLoading(false);
-        return;
+        return; 
       }
-      const { profiles, friendData } = result;
-      const merged: FriendWithStatus[] = friendData.map((fd, idx) => {
-        const profile = profiles[idx];
-        const isRequester = fd.user_id_1 === currentUserId;
+      const friendsWithProfiles: FriendWithProfile[] = result;
+      const merged: FriendWithStatus[] = friendsWithProfiles.map((fd) => {
+        const isRequester = fd.friend.user_id_1 === currentUserId;
         return {
-          ...profile,
-          status: fd.status,
+          ...fd.profile,
+          status: fd.friend.status,
           isRequester,
         };
       });
@@ -181,7 +176,7 @@ export default function People() {
   const acceptedFriends = friends.filter((f) => f.status === "accepted");
 
   return (
-    <div className="min-h-svh bg-white p-4 max-w-lg mx-auto">
+    <div className="min-h-svh p-4 max-w-lg mx-auto">
       {/* Groups Section */}
       <div>
         <div className="flex justify-between items-center mb-6">
@@ -238,10 +233,7 @@ export default function People() {
         ) : groups.length === 0 && !showNewGroupForm ? (
           <Card className="p-6 text-center">
             <p className="mb-4">You don&apos;t have any groups yet.</p>
-            <Button
-              onClick={() => setShowNewGroupForm(true)}
-              className="gap-2"
-            >
+            <Button onClick={() => setShowNewGroupForm(true)} className="gap-2">
               <IoAdd /> Create a Group
             </Button>
           </Card>
@@ -249,16 +241,17 @@ export default function People() {
           <div className="space-y-4">
             {groups.map((group) => (
               <Link href={`/groups/${group.id}`} key={group.id}>
-                <Card className="p-4 hover:bg-gray-50 transition-colors">
+                <Card className="p-4 hover:bg-muted transition-colors">
                   <div className="flex justify-between items-center">
                     <div>
                       <h2 className="text-lg font-medium">{group.name}</h2>
                       <p className="text-sm text-gray-500">
-                        Created {new Date(group.created_at).toLocaleDateString()}
+                        Created{" "}
+                        {new Date(group.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <IoPersonAdd size={16} /> Manage
+                    <Button variant="ghost" size="sm" className="gap-1">
+                      <IoArrowForward />
                     </Button>
                   </div>
                 </Card>
@@ -322,24 +315,15 @@ export default function People() {
                     className="flex items-center justify-between p-2 border rounded"
                   >
                     <div className="flex items-center gap-2">
-                      {profile.avatar_url && (
-                        <Image
-                          src={profile.avatar_url}
-                          alt={profile.username || ""}
-                          width={32}
-                          height={32}
-                          className="rounded-full"
-                        />
-                      )}
+                      <ProfilePicture
+                        src={profile.avatar_url}
+                        username={profile.username}
+                        size="sm"
+                      />
                       <div>
                         <div className="font-medium">
                           {profile.username || "User"}
                         </div>
-                        {profile.full_name && (
-                          <div className="text-xs text-gray-500">
-                            {profile.full_name}
-                          </div>
-                        )}
                       </div>
                     </div>
                     <Button
@@ -376,21 +360,11 @@ export default function People() {
                     <Card key={friend.id} className="p-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          {friend.avatar_url ? (
-                            <Image
-                              src={friend.avatar_url}
-                              alt={friend.username || ""}
-                              width={40}
-                              height={40}
-                              className="rounded-full"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-500 text-sm">
-                                {friend.username?.[0] || "?"}
-                              </span>
-                            </div>
-                          )}
+                          <ProfilePicture
+                            src={friend.avatar_url}
+                            username={friend.username}
+                            size="sm"
+                          />
                           <div>
                             <div className="font-medium">
                               {friend.username || "User"}
@@ -414,9 +388,7 @@ export default function People() {
                           <Button
                             size="sm"
                             variant="default"
-                            onClick={() =>
-                              handleAcceptFriendRequest(friend.id)
-                            }
+                            onClick={() => handleAcceptFriendRequest(friend.id)}
                           >
                             <IoCheckmark />
                           </Button>
@@ -439,21 +411,11 @@ export default function People() {
                     <Card key={friend.id} className="p-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          {friend.avatar_url ? (
-                            <Image
-                              src={friend.avatar_url}
-                              alt={friend.username || ""}
-                              width={40}
-                              height={40}
-                              className="rounded-full"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-500 text-sm">
-                                {friend.username?.[0] || "?"}
-                              </span>
-                            </div>
-                          )}
+                          <ProfilePicture
+                            src={friend.avatar_url}
+                            username={friend.username}
+                            size="sm"
+                          />
                           <div>
                             <div className="font-medium">
                               {friend.username || "User"}
@@ -491,21 +453,11 @@ export default function People() {
                     <Card key={friend.id} className="p-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          {friend.avatar_url ? (
-                            <Image
-                              src={friend.avatar_url}
-                              alt={friend.username || ""}
-                              width={40}
-                              height={40}
-                              className="rounded-full"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-500 text-sm">
-                                {friend.username?.[0] || "?"}
-                              </span>
-                            </div>
-                          )}
+                          <ProfilePicture
+                            src={friend.avatar_url}
+                            username={friend.username}
+                            size="sm"
+                          />
                           <div>
                             <div className="font-medium">
                               {friend.username || "User"}

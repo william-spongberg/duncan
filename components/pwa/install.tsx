@@ -4,12 +4,18 @@ import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function InstallPrompt() {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isIos, setIsIos] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    setIsMobile(
-      /iPad|iPhone|iPod|Android/.test(navigator.userAgent) &&
+    setIsIos(
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        !(window as any).MSStream
+    );
+    setIsAndroid(
+      /android/i.test(navigator.userAgent) &&
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         !(window as any).MSStream
     );
@@ -18,7 +24,7 @@ export default function InstallPrompt() {
   }, []);
 
   // don't show if not mobile or already installed
-  if (isStandalone || !isMobile) {
+  if (isStandalone || (!isIos && !isAndroid)) {
     return null;
   }
 
@@ -28,10 +34,18 @@ export default function InstallPrompt() {
         <CardTitle>Install App</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="mt-2 text-muted-foreground text-sm">
-          To install this app on your device, tap the three dots at top right,
-          then tap &apos;Install App&apos;
-        </p>
+        {isIos && (
+          <p className="mt-2 text-muted-foreground text-sm">
+            To install this app on your device, tap the three dots at top right,
+            then tap &apos;Install App&apos;
+          </p>
+        )}
+        {isAndroid && (
+          <p className="mt-2 text-muted-foreground text-sm">
+            To install this app on your device, tap the share button, then tap
+            &apos;Add to Home Screen&apos;
+          </p>
+        )}
       </CardContent>
     </Card>
   );

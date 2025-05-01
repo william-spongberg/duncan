@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getSnap, getSnapUrl } from "@/lib/database/snaps";
 import type { Snap } from "@/lib/database/types";
-import Image from "next/image";
+import { SnapDisplay } from "@/components/snap";
 
 interface SnapContentProps {
   snapId: string;
@@ -18,17 +18,19 @@ export default function SnapContent({ snapId }: SnapContentProps) {
     async function fetchSnap() {
       setLoading(true);
 
+      // fetch snap data
       const data = await getSnap(snapId);
-
       if (!data) {
         setSnap(null);
         setLoading(false);
         return;
       }
       setSnap(data);
-      // Get public URL for the snap
+      
+      // get url for snap
       const url = await getSnapUrl(data.storage_object_path);
       setImageUrl(url);
+
       setLoading(false);
     }
     fetchSnap();
@@ -40,15 +42,7 @@ export default function SnapContent({ snapId }: SnapContentProps) {
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="flex flex-col items-center gap-4">
-        {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt="Snap"
-            width={400}
-            height={400}
-            className="rounded-lg"
-          />
-        )}
+        {imageUrl && <SnapDisplay imageUrl={imageUrl} />}
         <div className="text-gray-500 text-sm">
           Uploaded: {new Date(snap.created_at).toLocaleString()}
         </div>

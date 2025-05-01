@@ -1,7 +1,8 @@
 import { supabase } from "@/lib/auth/client";
-import type { Profile, Friend } from "./types";
+import type { Profile, FriendWithProfile } from "./types";
 import { getProfile } from "./profiles";
 import { getUserId } from "./user";
+import { getCachedFriends, setCachedFriends } from "../cache/friends";
 
 /**
  * Get all friends for a user
@@ -9,9 +10,15 @@ import { getUserId } from "./user";
 export async function getFriends(
   status: "pending" | "accepted" | "blocked" | "all" = "accepted",
   userId: string | null = null
-): Promise<{ profiles: Profile[]; friendData: Friend[] }> {
+): Promise<FriendWithProfile[]> {
   if (!userId) {
     userId = await getUserId();
+  }
+
+  // try to get from cache
+  const cached = await getCachedFriends(userId, status);
+  if (cached) {
+    return cached;
   }
 
   // build query
@@ -26,35 +33,30 @@ export async function getFriends(
   }
 
   // execute query
-  const { data, error } = await query;
+  const { data: friends, error } = await query;
 
   if (error) {
     throw new Error("Error fetching friends: " + error.message);
   }
 
-  // extract profiles
-  const friendProfiles: Profile[] = [];
-  const friendData: Friend[] = [];
-
-  await Promise.all(
-    data.map(async (friend: Friend) => {
-      // determine the friend's ID
-      const otherProfileId =
+  // fetch profiles for each friend
+  const profiles: Profile[] = await Promise.all(
+    friends.map(async (friend) => {
+      const friendId =
         friend.user_id_1 === userId ? friend.user_id_2 : friend.user_id_1;
-
-      // get profile
-      const otherProfile = await getProfile(otherProfileId);
-
-      if (!otherProfile) {
-        throw new Error("Error fetching friend profile: Profile not found");
-      }
-
-      friendProfiles.push(otherProfile);
-      friendData.push(friend);
+      return getProfile(friendId);
     })
   );
 
-  return { profiles: friendProfiles, friendData };
+  const friendsWithProfiles: FriendWithProfile[] = friends.map((friend, i) => ({
+    friend,
+    profile: profiles[i],
+  }));
+
+  // cache the result
+  await setCachedFriends(userId, status, friendsWithProfiles);
+
+  return friendsWithProfiles;
 }
 
 export async function getFriendCount(
@@ -65,8 +67,14 @@ export async function getFriendCount(
     userId = await getUserId();
   }
 
+  // try cache
+  const cached = await getCachedFriends(userId, status);
+  if (cached) {
+    return cached.length;
+  }
+
   const friends = await getFriends(status, userId);
-  return friends ? friends.profiles.length : 0;
+  return friends ? friends.length : 0;
 }
 
 /**

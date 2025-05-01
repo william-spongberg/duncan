@@ -10,7 +10,8 @@ import {
   IoPersonOutline,
 } from "react-icons/io5";
 import Link from "next/link";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Duncan" />
+      </head>
       <body
         className={cn(
           "relative flex h-full flex-col bg-background font-sans",
@@ -42,55 +46,57 @@ export default function RootLayout({
           "antialiased"
         )}
       >
-        <main className="flex-grow overflow-y-auto w-full max-w-md mx-auto bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-          {children}
-          <SpeedInsights />
-        </main>
-        {/* Bottom Navigation Bar */}
-        <footer className="sticky bottom-0 z-50 h-16 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <nav className="mx-auto flex h-full max-w-md items-center justify-around">
-            <Link href="/snaps">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <IoImagesOutline className="h-6 w-6" />
-                <span className="sr-only">Images</span>
-              </Button>
-            </Link>
-            <Link href="/">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <IoCameraOutline className="h-7 w-7" />
-                <span className="sr-only">Camera</span>
-              </Button>
-            </Link>
-            <Link href="/people">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <IoPeopleOutline className="h-6 w-6" />
-                <span className="sr-only">Friends</span>
-              </Button>
-            </Link>
-            <Link href="/protected">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <IoPersonOutline className="h-6 w-6" />
-                <span className="sr-only">Profile</span>
-              </Button>
-            </Link>
-          </nav>
-        </footer>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <main className="flex-grow overflow-y-auto w-full max-w-md mx-auto backdrop-blur">
+            {children}
+            <SpeedInsights />
+          </main>
+          {/* Bottom Navigation Bar */}
+          <footer className="sticky bottom-0 z-50 h-16 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <nav className="mx-auto flex h-full max-w-md items-center justify-around">
+              <Link href="/snaps">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <IoImagesOutline className="h-6 w-6" />
+                  <span className="sr-only">Images</span>
+                </Button>
+              </Link>
+              <Link href="/">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <IoCameraOutline className="h-7 w-7" />
+                  <span className="sr-only">Camera</span>
+                </Button>
+              </Link>
+              <Link href="/people">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <IoPeopleOutline className="h-6 w-6" />
+                  <span className="sr-only">Friends</span>
+                </Button>
+              </Link>
+              <Link href="/protected">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <IoPersonOutline className="h-6 w-6" />
+                  <span className="sr-only">Profile</span>
+                </Button>
+              </Link>
+            </nav>
+          </footer>
+        </ThemeProvider>
       </body>
     </html>
   );

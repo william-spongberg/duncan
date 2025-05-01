@@ -4,20 +4,37 @@ import { v4 as uuidv4 } from "uuid";
 import { getUserId } from "./user";
 import { getProfile } from "./profiles";
 import { sendGroupNotification } from "../pwa/actions";
+import {
+  getCachedGroupSnaps,
+  setCachedGroupSnaps,
+  delCachedGroupSnaps,
+  getCachedSnap,
+  setCachedSnap,
+  getCachedSnapUrl,
+  setCachedSnapUrl,
+} from "../cache/snaps";
 
 // get all snaps for a group
-export async function getGroupSnaps(groupId: string, count: number | null = null): Promise<Snap[]> {
+export async function getGroupSnaps(
+  groupId: string,
+  count: number | null = null
+): Promise<Snap[]> {
+  // try to get from cache
+  const cached = await getCachedGroupSnaps(groupId, count);
+  if (cached) {
+    return cached;
+  }
+
   // build query
   let query = supabase.from("snaps").select("*").eq("group_id", groupId);
   if (count) {
     query = query.limit(count);
   }
-
   const { data, error } = await query.order("created_at", { ascending: false });
-
   if (error) {
     throw new Error("Error fetching snaps: " + error.message);
   }
+  await setCachedGroupSnaps(groupId, data);
 
   return data;
 }
@@ -73,17 +90,25 @@ export async function uploadSnap(
 
   // send notification
   const { error: notificationError } = await sendGroupNotification(
+    userId,
     username,
     groupId,
     "sent you a Snap"
   );
-
   if (notificationError) {
     throw new Error("Error sending group notification: " + notificationError);
   }
+  // invalidate snaps cache for this group
+  await delCachedGroupSnaps(groupId);
 }
 
 export async function getSnap(snapId: string): Promise<Snap> {
+  // try to get from cache
+  const cached = await getCachedSnap(snapId);
+  if (cached) {
+    return cached;
+  }
+
   const { data, error } = await supabase
     .from("snaps")
     .select("*")
@@ -94,6 +119,8 @@ export async function getSnap(snapId: string): Promise<Snap> {
     throw new Error("Error fetching snap: " + error.message);
   }
 
+  await setCachedSnap(snapId, data); // cache the snap
+
   return data;
 }
 
@@ -101,15 +128,33 @@ export async function getSnap(snapId: string): Promise<Snap> {
  * Get a public URL for a snap/image
  */
 export async function getSnapUrl(storagePath: string): Promise<string> {
+  // try cache first
+  const cached = await getCachedSnapUrl(storagePath);
+  if (cached) {
+    return cached;
+  }
+
+  // download the file from storage
   const { data, error } = await supabase.storage
     .from("snaps")
-    .createSignedUrl(storagePath, 60 * 60); // 1 hour expiry
+    .download(storagePath);
 
-  if (error || !data?.signedUrl) {
+  if (error || !data) {
     throw new Error(
-      "Error generating signed URL: " + (error?.message || "Unknown error")
+      "Error downloading image: " + (error?.message || "Unknown error")
     );
   }
 
-  return data.signedUrl;
+  // create data url from blob
+  const reader = new FileReader();
+  const blob = new Blob([data], { type: "image/jpeg" });
+  reader.readAsDataURL(blob);
+
+  return new Promise((resolve) => {
+    reader.onloadend = () => {
+      const base64data = reader.result as string;
+      setCachedSnapUrl(storagePath, base64data);
+      resolve(base64data);
+    };
+  });
 }

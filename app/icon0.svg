@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="200" height="200"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="1000" height="1000"><g clip-path="url(#SvgjsClipPath1038)"><rect width="1000" height="1000" fill="#fffc00"></rect><g transform="matrix(5,0,0,5,0,0)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="200" height="200"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="200" height="200"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" aria-labelledby="title description">
   <title>Snapchat Clone Icon</title>
   <desc>Icon inspired by dundun teddy with playful rounded features and friendly elements.</desc>
   <!-- Background shape: a soft rounded square -->
-  <rect x="5" y="5" width="190" height="190" rx="40" ry="40" fill="#FFFC00" stroke="#000" stroke-width="4"></rect>
+  <rect x="5" y="5" width="190" height="190" rx="40" ry="40" fill="#FFFC00"></rect>
 
   <!-- Teddy Bear Head (the main circle for the face) -->
   <circle cx="100" cy="100" r="50" fill="#FFF" stroke="#000" stroke-width="3"></circle>
@@ -26,4 +26,4 @@
            C 80 160, 120 160, 100 170" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round"></path>
 </svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
 @media (prefers-color-scheme: dark) { :root { filter: none; } }
-</style></svg>
+</style></svg></svg></g></g><defs><clipPath id="SvgjsClipPath1038"><rect width="1000" height="1000" x="0" y="0" rx="350" ry="350"></rect></clipPath></defs></svg>
