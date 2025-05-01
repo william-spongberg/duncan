@@ -29,8 +29,8 @@ export async function sendGroupNotification(
 
   // Get all subscriptions for these users, excluding the user who posted the snap
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userIds = groupMembers.map((member: any) => member.user_id);
-  userIds.filter((id: string) => id !== userId);
+  let userIds = groupMembers.map((member: any) => member.user_id);
+  userIds = userIds.filter((id) => id !== userId);
   const { data: subscriptions, error: subError } = await supabase
     .from("subscriptions")
     .select("endpoint, keys")
