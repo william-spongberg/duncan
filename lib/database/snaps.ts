@@ -75,7 +75,7 @@ export async function uploadSnap(
   const { error: notificationError } = await sendGroupNotification(
     username,
     groupId,
-    "New snap uploaded!"
+    "sent you a Snap"
   );
 
   if (notificationError) {

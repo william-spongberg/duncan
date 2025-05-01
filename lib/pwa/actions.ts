@@ -40,7 +40,7 @@ export async function sendGroupNotification(
   for (const sub of subscriptions || []) {
     try {
       await sendNotification(
-        `${username} posted a snap!`,
+        `${username}`,
         message,
         sub.endpoint,
         sub.keys
