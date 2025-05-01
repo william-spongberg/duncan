@@ -37,6 +37,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="apple-mobile-web-app-title" content="Duncan" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body
         className={cn(
