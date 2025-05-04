@@ -22,3 +22,4 @@ PWA replacement for Snapchat. Uses Vercel, Next JS and Supabase.
 - [x] Increase camera resolution
 - [ ] Query camera with group name already set
 - [ ] Refactoring
+- [ ] DELETE groups + snaps + friends + profile/account

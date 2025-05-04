@@ -28,12 +28,7 @@ export default function SnapsPage() {
       const result: Array<{
         id: string;
         name: string;
-        snaps: Array<
-          Snap & {
-            url: string;
-            uploader?: { username: string; avatar_url: string | null };
-          }
-        >;
+        snaps: SnapWithUrl[]
       }> = [];
 
       // get snaps for each group
