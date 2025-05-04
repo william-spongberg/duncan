@@ -8,11 +8,12 @@ import {
   addGroupMember,
   getGroupMembers,
   getGroup,
+  deleteGroup
 } from "@/lib/database/groups";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { IoPersonAdd, IoCamera } from "react-icons/io5";
+import { IoPersonAdd, IoCamera, IoSettings } from "react-icons/io5";
 import type { Group, GroupMember, Profile, Snap } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
 import { SnapPreviews } from "@/components/snaps/snap-previews";
@@ -33,6 +34,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
   const [friends, setFriends] = useState<Profile[]>([]);
   const [selectedFriend, setSelectedFriend] = useState<string>("");
   const [isAdding, setIsAdding] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     async function fetchGroupData() {
@@ -41,7 +43,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
       // fetch group
       const groupData = await getGroup(groupId);
       if (!groupData) {
-        router.push("/groups");
+        router.push("/people");
         return;
       }
       setGroup(groupData);
@@ -113,6 +115,11 @@ export default function GroupContent({ groupId }: GroupContentProps) {
     }
   };
 
+  const handleDeleteGroup = async() => {
+    await deleteGroup(groupId);
+    router.push("/people");
+  }
+
   if (loading) {
     return (
       <div className="min-h-svh p-4 max-w-lg mx-auto">
@@ -125,8 +132,8 @@ export default function GroupContent({ groupId }: GroupContentProps) {
     return (
       <div className="min-h-svh p-4 max-w-lg mx-auto">
         <div className="text-center py-10">Group not found</div>
-        <Link href="/groups">
-          <Button>Back to Groups</Button>
+        <Link href="/people">
+          <Button>Go back</Button>
         </Link>
       </div>
     );
@@ -138,17 +145,21 @@ export default function GroupContent({ groupId }: GroupContentProps) {
         <h1 className="text-2xl font-bold">{group.name}</h1>
         <div className="flex gap-2">
           <Link href="/">
-            <Button variant="outline" size="sm" className="gap-1">
-              <IoCamera size={16} />
+            <Button variant="default" size="icon" className="gap-1">
+              <IoCamera className="size-6" />
             </Button>
           </Link>
           <Button
-            variant="default"
-            size="sm"
+            variant="secondary"
+            size="icon"
             className="gap-1"
             onClick={() => setShowAddMemberForm(!showAddMemberForm)}
           >
-            <IoPersonAdd size={16} />
+            <IoPersonAdd className="size-6" />
+          </Button>
+          <Button variant="outline" size="icon" className="gap-1" 
+          onClick={() => setShowSettings(!showSettings)}>
+            <IoSettings className="size-6" />
           </Button>
         </div>
       </div>
@@ -207,6 +218,17 @@ export default function GroupContent({ groupId }: GroupContentProps) {
               </div>
             </form>
           )}
+        </Card>
+      )}
+
+      {showSettings && (
+        <Card className="p-4 mb-6">
+          <CardHeader>Settings</CardHeader>
+          <CardContent>
+            <Button variant="destructive" onClick={handleDeleteGroup}>
+              Delete Group
+            </Button>
+          </CardContent>
         </Card>
       )}
 

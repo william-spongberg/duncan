@@ -9,7 +9,7 @@ import { getCachedFriends, setCachedFriends } from "../cache/friends";
  */
 export async function getFriends(
   status: "pending" | "accepted" | "blocked" | "all" = "accepted",
-  userId: string | null = null
+  userId?: string
 ): Promise<FriendShipWithProfile[]> {
   if (!userId) {
     userId = await getUserId();
@@ -61,7 +61,7 @@ export async function getFriends(
 
 export async function getFriendCount(
   status: "pending" | "accepted" | "blocked" = "accepted",
-  userId: string | null = null
+  userId?: string
 ): Promise<number> {
   if (!userId) {
     userId = await getUserId();
@@ -105,7 +105,7 @@ export async function sendFriendRequest(
  */
 export async function acceptFriendRequest(
   friendId: string,
-  userId: string | null = null
+  userId?: string
 ): Promise<void> {
   if (!userId) {
     userId = await getUserId();
@@ -130,7 +130,7 @@ export async function acceptFriendRequest(
 // reject a friend request
 export async function rejectFriendRequest(
   friendId: string,
-  userId: string | null = null
+  userId?: string
 ): Promise<void> {
   if (!userId) {
     userId = await getUserId();

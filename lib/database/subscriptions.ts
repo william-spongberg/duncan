@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 // store a user's push subscription in Supabase
 export async function subscribeUser(
   sub: PushSubscription,
-  userId: string | null = null
+  userId?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!userId) {
     userId = await getUserId();
@@ -30,7 +30,7 @@ export async function subscribeUser(
 
 // remove a user's push subscription from Supabase
 export async function unsubscribeUser(
-  userId: string | null = null
+  userId?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!userId) {
     userId = await getUserId();
@@ -47,7 +47,7 @@ export async function unsubscribeUser(
 
 // different subscription per device - each device saves its own id for each user
 export async function getSubscriptionId(
-  userId: string | null = null
+  userId?: string
 ): Promise<string> {
   if (!userId) {
     userId = await getUserId();

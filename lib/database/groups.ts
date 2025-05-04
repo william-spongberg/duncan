@@ -2,21 +2,28 @@ import { supabase } from "@/lib/auth/client";
 import type { Group, GroupMember } from "./types";
 import { getUserId } from "./user";
 import {
-  getCachedGroup,
-  setCachedGroup,
   getCachedGroupMembers,
   setCachedGroupMembers,
   delCachedGroupMembers,
   getCachedUserGroups,
   setCachedUserGroups,
+  delCachedUserGroups,
 } from "@/lib/cache/groups";
+import { delCachedGroupSnaps } from "../cache/snaps";
 
 // get group
-export async function getGroup(groupId: string): Promise<Group | null> {
+export async function getGroup(groupId: string, userId?: string): Promise<Group | null> {
+  if (!userId) {
+    userId = await getUserId();
+  }
+
   // try to get from cache
-  const cached = await getCachedGroup(groupId);
+  const cached = await getCachedUserGroups(userId);
   if (cached) {
-    return cached;
+    const group = cached.find((group) => group.id === groupId);
+    if (group) {
+      return group;
+    }
   }
 
   const { data, error } = await supabase
@@ -29,8 +36,6 @@ export async function getGroup(groupId: string): Promise<Group | null> {
     throw new Error("Error fetching group: " + error.message);
   }
 
-  await setCachedGroup(groupId, data);
-
   return data;
 }
 
@@ -39,8 +44,13 @@ export async function getGroup(groupId: string): Promise<Group | null> {
  */
 export async function createGroup(
   name: string,
-  createdBy: string
+  createdBy: string,
+  userId?: string
 ): Promise<Group> {
+  if (!userId) {
+    userId = await getUserId();
+  }
+
   const { data, error } = await supabase
     .from("groups")
     .insert({
@@ -51,6 +61,7 @@ export async function createGroup(
     .single();
 
   if (error) {
+    console.log(error);
     throw new Error("Error creating group: " + error.message);
   }
 
@@ -60,10 +71,32 @@ export async function createGroup(
     user_id: createdBy,
   });
 
-  // Cache the group
-  await setCachedGroup(data.id, data);
+  // invalidate user groups
+  await delCachedUserGroups(userId);
 
   return data;
+}
+
+export async function deleteGroup(
+  groupId: string,
+  userId?: string
+): Promise<void> {
+  if (!userId) {
+    userId = await getUserId();
+  }
+
+  const { error } = await supabase.from("groups").delete().eq("id", groupId);
+
+  if (error) {
+    throw new Error("Error deleting group: " + error.message);
+  }
+
+  // user groups is now stale
+  await delCachedUserGroups(userId);
+
+  // delete old cache
+  await delCachedGroupSnaps(groupId);
+  await delCachedGroupMembers(groupId);  
 }
 
 /**
@@ -71,7 +104,7 @@ export async function createGroup(
  */
 export async function addGroupMember(
   groupId: string,
-  userId: string | null = null
+  userId?: string
 ): Promise<void> {
   if (!userId) {
     userId = await getUserId();
@@ -115,7 +148,7 @@ export async function getGroupMembers(groupId: string): Promise<GroupMember[]> {
  * Get groups for a user
  */
 export async function getUserGroups(
-  userId: string | null = null
+  userId?: string
 ): Promise<Group[]> {
   if (!userId) {
     userId = await getUserId();
@@ -155,7 +188,7 @@ export async function getUserGroups(
 
 // get number of groups for a user
 export async function getUserGroupsCount(
-  userId: string | null = null
+  userId?: string
 ): Promise<number> {
   if (!userId) {
     userId = await getUserId();

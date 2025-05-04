@@ -7,7 +7,7 @@ import { getCachedProfile, setCachedProfile, delCachedProfile } from "@/lib/cach
  * Get a user's profile by ID
  */
 export async function getProfile(
-  userId: string | null = null
+  userId?: string
 ): Promise<Profile> {
   if (!userId) {
     userId = await getUserId();
@@ -38,7 +38,7 @@ export async function getProfile(
 
 export async function updateProfileUsername(
   username: string,
-  userId: string | null = null
+  userId?: string
 ): Promise<Profile> {
   if (!userId) {
     userId = await getUserId();

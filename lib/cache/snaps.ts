@@ -1,6 +1,7 @@
 import { get, set, del } from "idb-keyval";
 import type { Snap } from "@/lib/database/types";
 
+// group snaps
 export async function getCachedGroupSnaps(
   groupId: string,
   count: number | null = null
@@ -30,20 +31,10 @@ export async function delCachedGroupSnaps(groupId: string): Promise<void> {
   await del(`group_snaps_${groupId}`);
 }
 
-export async function getCachedSnap(snapId: string): Promise<Snap | null> {
-  const cached = await get(`snap_${snapId}`);
-  if (cached) {
-    console.log("Cache hit for snap!");
-    return cached;
-  }
-  return null;
-}
-
-export async function setCachedSnap(snapId: string, snap: Snap): Promise<void> {
-  await set(`snap_${snapId}`, snap);
-}
-
-export async function getCachedSnapUrl(storagePath: string): Promise<string | null> {
+// snap urls
+export async function getCachedSnapUrl(
+  storagePath: string
+): Promise<string | null> {
   const cached = await get(`snap_url_${storagePath}`);
   if (cached) {
     console.log("Cache hit for snap URL!");
@@ -57,4 +48,8 @@ export async function setCachedSnapUrl(
   url: string
 ): Promise<void> {
   await set(`snap_url_${storagePath}`, url);
+}
+
+export async function delCachedSnapUrl(storagePath: string): Promise<void> {
+  await del(`snap_url_${storagePath}`);
 }

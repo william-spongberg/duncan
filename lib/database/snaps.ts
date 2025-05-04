@@ -8,19 +8,19 @@ import {
   getCachedGroupSnaps,
   setCachedGroupSnaps,
   delCachedGroupSnaps,
-  getCachedSnap,
-  setCachedSnap,
   getCachedSnapUrl,
   setCachedSnapUrl,
 } from "../cache/snaps";
 
-// get latest snap from a group
-export async function getLatestGroupSnap(groupId: string): Promise<Snap | null> {
+// get latest snap for a group
+export async function getLatestGroupSnap(
+  groupId: string
+): Promise<Snap | null> {
   const { data, error } = await supabase
     .from("snaps")
     .select("*")
     .eq("group_id", groupId)
-    .order("created_at", { ascending: false})
+    .order("created_at", { ascending: false })
     .limit(1)
     .single();
 
@@ -62,7 +62,7 @@ export async function getGroupSnaps(
 export async function uploadSnap(
   groupId: string,
   imageSrc: string,
-  userId: string | null = null
+  userId?: string
 ): Promise<void> {
   if (!userId) {
     userId = await getUserId();
@@ -119,11 +119,14 @@ export async function uploadSnap(
   await delCachedGroupSnaps(groupId);
 }
 
-export async function getSnap(snapId: string): Promise<Snap> {
+export async function getSnap(snapId: string, groupId: string): Promise<Snap> {
   // try to get from cache
-  const cached = await getCachedSnap(snapId);
+  const cached = await getCachedGroupSnaps(groupId);
   if (cached) {
-    return cached;
+    const snap = cached.find((snap) => snap.id === snapId);
+    if (snap) {
+      return snap;
+    }
   }
 
   const { data, error } = await supabase
@@ -135,8 +138,6 @@ export async function getSnap(snapId: string): Promise<Snap> {
   if (error) {
     throw new Error("Error fetching snap: " + error.message);
   }
-
-  await setCachedSnap(snapId, data); // cache the snap
 
   return data;
 }
