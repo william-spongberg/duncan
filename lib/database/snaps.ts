@@ -34,7 +34,7 @@ export async function getLatestGroupSnap(
 // get all snaps for a group
 export async function getGroupSnaps(
   groupId: string,
-  count: number | null = null
+  count?: number
 ): Promise<Snap[]> {
   // try to get from cache
   const cached = await getCachedGroupSnaps(groupId, count);
@@ -119,16 +119,8 @@ export async function uploadSnap(
   await delCachedGroupSnaps(groupId);
 }
 
-export async function getSnap(snapId: string, groupId: string): Promise<Snap> {
-  // try to get from cache
-  const cached = await getCachedGroupSnaps(groupId);
-  if (cached) {
-    const snap = cached.find((snap) => snap.id === snapId);
-    if (snap) {
-      return snap;
-    }
-  }
-
+// no cache for single snaps - snap image data likely already stored anyway
+export async function getSnap(snapId: string): Promise<Snap> {
   const { data, error } = await supabase
     .from("snaps")
     .select("*")
@@ -142,10 +134,8 @@ export async function getSnap(snapId: string, groupId: string): Promise<Snap> {
   return data;
 }
 
-/**
- * Get a public URL for a snap/image
- */
-export async function getSnapUrl(storagePath: string): Promise<string> {
+// get url for image data of snap - downloads from server and saves locally
+export async function getSnapImage(storagePath: string): Promise<string> {
   // try cache first
   const cached = await getCachedSnapUrl(storagePath);
   if (cached) {

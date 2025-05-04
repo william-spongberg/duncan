@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getSnap, getSnapUrl } from "@/lib/database/snaps";
+import { getSnap, getSnapImage } from "@/lib/database/snaps";
 import type { Snap } from "@/lib/database/types";
 import { SnapDisplay } from "@/components/snaps/snap-display";
 
@@ -28,7 +28,7 @@ export default function SnapContent({ snapId }: SnapContentProps) {
       setSnap(data);
       
       // get url for snap
-      const url = await getSnapUrl(data.storage_object_path);
+      const url = await getSnapImage(data.storage_object_path);
       setImageUrl(url);
 
       setLoading(false);

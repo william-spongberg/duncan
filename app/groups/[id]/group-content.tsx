@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getProfile } from "@/lib/database/profiles";
-import { getSnapUrl, getGroupSnaps } from "@/lib/database/snaps";
+import { getSnapImage, getGroupSnaps } from "@/lib/database/snaps";
 import { getFriends } from "@/lib/database/friends";
 import {
   addGroupMember,
@@ -63,7 +63,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
       if (groupSnaps) {
         snapsWithUrls = await Promise.all(
           groupSnaps.map(async (snap: Snap) => {
-            const url = await getSnapUrl(snap.storage_object_path);
+            const url = await getSnapImage(snap.storage_object_path);
             return { ...snap, url };
           })
         );

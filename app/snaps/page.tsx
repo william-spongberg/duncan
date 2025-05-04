@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserGroups } from "@/lib/database/groups";
-import { getSnapUrl, getLatestGroupSnap } from "@/lib/database/snaps";
+import { getSnapImage, getLatestGroupSnap } from "@/lib/database/snaps";
 import type { Snap, SnapWithUrl } from "@/lib/database/types";
 import {
   Carousel,
@@ -51,7 +51,7 @@ export default function SnapsPage() {
               snap: null,
             });
           } else {
-            const url = await getSnapUrl(snap.storage_object_path);
+            const url = await getSnapImage(snap.storage_object_path);
             result.push({
               id: group.id,
               name: group.name,
@@ -110,7 +110,9 @@ export default function SnapsPage() {
                           No snaps in this group yet.
                         </p>
                       ) : (
-                        <SnapDisplay imageUrl={group.snap.url} />
+                        <Link href={`/snaps/${group.snap.id}`}>
+                          <SnapDisplay imageUrl={group.snap.url} />
+                        </Link>
                       )}
                     </CardContent>
                   </Card>
