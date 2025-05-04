@@ -8,7 +8,8 @@ import {
   addGroupMember,
   getGroupMembers,
   getGroup,
-  deleteGroup
+  deleteGroup,
+  leaveGroup,
 } from "@/lib/database/groups";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
@@ -115,10 +116,15 @@ export default function GroupContent({ groupId }: GroupContentProps) {
     }
   };
 
-  const handleDeleteGroup = async() => {
+  const handleLeaveGroup = async () => {
+    await leaveGroup(groupId);
+    router.push("/people");
+  };
+
+  const handleDeleteGroup = async () => {
     await deleteGroup(groupId);
     router.push("/people");
-  }
+  };
 
   if (loading) {
     return (
@@ -157,8 +163,12 @@ export default function GroupContent({ groupId }: GroupContentProps) {
           >
             <IoPersonAdd className="size-6" />
           </Button>
-          <Button variant="outline" size="icon" className="gap-1" 
-          onClick={() => setShowSettings(!showSettings)}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="gap-1"
+            onClick={() => setShowSettings(!showSettings)}
+          >
             <IoSettings className="size-6" />
           </Button>
         </div>
@@ -225,9 +235,15 @@ export default function GroupContent({ groupId }: GroupContentProps) {
         <Card className="p-4 mb-6">
           <CardHeader>Settings</CardHeader>
           <CardContent>
-            <Button variant="destructive" onClick={handleDeleteGroup}>
-              Delete Group
-            </Button>
+            {members.length == 1 ? (
+              <Button variant="destructive" onClick={handleDeleteGroup}>
+                Delete Group
+              </Button>
+            ) : (
+              <Button variant="destructive" onClick={handleLeaveGroup}>
+                Leave Group
+              </Button>
+            )}
           </CardContent>
         </Card>
       )}

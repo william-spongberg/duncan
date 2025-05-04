@@ -12,7 +12,10 @@ import {
 import { delCachedGroupSnaps } from "../cache/snaps";
 
 // get group
-export async function getGroup(groupId: string, userId?: string): Promise<Group | null> {
+export async function getGroup(
+  groupId: string,
+  userId?: string
+): Promise<Group | null> {
   if (!userId) {
     userId = await getUserId();
   }
@@ -77,6 +80,33 @@ export async function createGroup(
   return data;
 }
 
+export async function leaveGroup(
+  groupId: string,
+  userId?: string
+): Promise<void> {
+  if (!userId) {
+    userId = await getUserId();
+  }
+
+  // delete membership
+  const { error } = await supabase
+    .from("group_members")
+    .delete()
+    .eq("group_id", groupId)
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new Error("Error deleting group: " + error.message);
+  }
+
+  // user groups is now stale
+  await delCachedUserGroups(userId);
+
+  // delete old cache
+  await delCachedGroupSnaps(groupId);
+  await delCachedGroupMembers(groupId);
+}
+
 export async function deleteGroup(
   groupId: string,
   userId?: string
@@ -96,7 +126,7 @@ export async function deleteGroup(
 
   // delete old cache
   await delCachedGroupSnaps(groupId);
-  await delCachedGroupMembers(groupId);  
+  await delCachedGroupMembers(groupId);
 }
 
 /**
@@ -147,9 +177,7 @@ export async function getGroupMembers(groupId: string): Promise<GroupMember[]> {
 /**
  * Get groups for a user
  */
-export async function getUserGroups(
-  userId?: string
-): Promise<Group[]> {
+export async function getUserGroups(userId?: string): Promise<Group[]> {
   if (!userId) {
     userId = await getUserId();
   }
@@ -187,9 +215,7 @@ export async function getUserGroups(
 }
 
 // get number of groups for a user
-export async function getUserGroupsCount(
-  userId?: string
-): Promise<number> {
+export async function getUserGroupsCount(userId?: string): Promise<number> {
   if (!userId) {
     userId = await getUserId();
   }
