@@ -134,6 +134,17 @@ export async function getSnap(snapId: string): Promise<Snap> {
   return data;
 }
 
+export async function deleteSnap(snapId: string): Promise<void> {
+  const { error } = await supabase
+    .from("snaps")
+    .delete()
+    .eq("id", snapId);
+
+  if (error) {
+    throw new Error("Error fetching snap: " + error.message);
+  }
+}
+
 // get url for image data of snap - downloads from server and saves locally
 export async function getSnapImage(storagePath: string): Promise<string> {
   // try cache first
