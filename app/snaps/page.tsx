@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserGroups } from "@/lib/database/groups";
-import { getSnapImage, getLatestGroupSnap } from "@/lib/database/snaps";
+import { getSnapImage, getLatestGroupSnaps } from "@/lib/database/snaps";
 import type { Snap, SnapWithUrl } from "@/lib/database/types";
 import {
   Carousel,
@@ -25,7 +25,7 @@ export default function SnapsPage() {
     Array<{
       id: string;
       name: string;
-      snap: SnapWithUrl | null;
+      snaps: SnapWithUrl[];
     }>
   >([]);
   const [loading, setLoading] = useState(true);
@@ -37,27 +37,23 @@ export default function SnapsPage() {
       const result: Array<{
         id: string;
         name: string;
-        snap: SnapWithUrl | null;
+        snaps: SnapWithUrl[];
       }> = [];
 
       // get snaps for each group
       if (groupsData) {
         for (const group of groupsData) {
-          const snap: Snap | null = await getLatestGroupSnap(group.id);
-          if (!snap) {
-            result.push({
-              id: group.id,
-              name: group.name,
-              snap: null,
-            });
-          } else {
+          const latestSnaps: Snap[] = await getLatestGroupSnaps(group.id);
+          const snapsWithUrls: SnapWithUrl[] = [];
+          for (const snap of latestSnaps) {
             const url = await getSnapImage(snap.storage_object_path);
-            result.push({
-              id: group.id,
-              name: group.name,
-              snap: { ...snap, url },
-            });
+            snapsWithUrls.push({ ...snap, url });
           }
+          result.push({
+            id: group.id,
+            name: group.name,
+            snaps: snapsWithUrls,
+          });
         }
       }
       setLatestGroupSnaps(result);
@@ -90,35 +86,33 @@ export default function SnapsPage() {
           orientation="vertical"
         >
           <CarouselContent className="h-[95dvh]">
-            {latestGroupSnaps.map((group) => (
-              <CarouselItem key={group.id} className="pt-1 basis-1/2">
-                <div className="p-1">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>{group.name}</CardTitle>
-                      <CardDescription>
-                        <Link href={`/groups/${group.id}`}>
-                          <Button variant="outline" size="sm">
-                            See More
-                          </Button>
-                        </Link>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {!group.snap ? (
-                        <p className="text-gray-500 text-sm">
-                          No snaps in this group yet.
-                        </p>
-                      ) : (
-                        <Link href={`/snaps/${group.snap.id}`}>
-                          <SnapDisplay imageUrl={group.snap.url} />
-                        </Link>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              </CarouselItem>
-            ))}
+            {latestGroupSnaps.map((group) =>
+              group.snaps.length !== 0
+                ? group.snaps.map((snap) => (
+                    <CarouselItem key={snap.id} className="pt-1 basis-1/2">
+                      <div className="p-1">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>{group.name}</CardTitle>
+                            <CardDescription>
+                              <Link href={`/groups/${group.id}`}>
+                                <Button variant="outline" size="sm">
+                                  See More
+                                </Button>
+                              </Link>
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <Link href={`/snaps/${snap.id}`}>
+                              <SnapDisplay imageUrl={snap.url} />
+                            </Link>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CarouselItem>
+                  ))
+                : null
+            )}
           </CarouselContent>
         </Carousel>
       )}
