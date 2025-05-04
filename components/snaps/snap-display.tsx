@@ -1,11 +1,21 @@
 import Image from "next/image";
 import { WIDTH, HEIGHT } from "@/constants";
+import { Snap } from "@/lib/database/types";
 
 interface SnapDisplayProps {
   imageUrl: string;
+  snap: Snap;
   isSmall?: boolean;
 }
-export function SnapDisplay({ imageUrl, isSmall = false }: SnapDisplayProps) {
+
+// TODO: render message onto snap
+export function SnapDisplay({
+  imageUrl,
+  snap,
+  isSmall = false,
+}: SnapDisplayProps) {
+  console.log(snap.message_y_level);
+
   return (
     <>
       {isSmall ? (
@@ -19,7 +29,7 @@ export function SnapDisplay({ imageUrl, isSmall = false }: SnapDisplayProps) {
           />
         </div>
       ) : (
-        <div>
+        <div className="relative w-fit">
           <Image
             src={imageUrl}
             alt="Snap"
@@ -27,6 +37,18 @@ export function SnapDisplay({ imageUrl, isSmall = false }: SnapDisplayProps) {
             height={HEIGHT}
             className="rounded-lg"
           />
+          {snap?.message && (
+            <div
+              className="absolute left-1/2 w-full text-center font-bold text-white pointer-events-none text-[1.5rem]"
+              style={{
+                top: snap.message_y_level || 0,
+                transform: "translateX(-50%)",
+                textShadow: "0 0 4px black",
+              }}
+            >
+              {snap.message}
+            </div>
+          )}
         </div>
       )}
     </>

@@ -43,6 +43,8 @@ export type Snap = {
   group_id: string;
   uploader_user_id: string | null;
   storage_object_path: string;
+  message: string | null;
+  message_y_level: number | null;
   created_at: string;
 };
 

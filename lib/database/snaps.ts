@@ -61,6 +61,8 @@ export async function getGroupSnaps(
 export async function uploadSnap(
   groupId: string,
   imageSrc: string,
+  message?: string | null,
+  messageYLevel?: number | null,
   userId?: string
 ): Promise<void> {
   if (!userId) {
@@ -98,6 +100,8 @@ export async function uploadSnap(
     group_id: groupId,
     uploader_user_id: userId,
     storage_object_path: filePath,
+    message,
+    message_y_level: messageYLevel,
   });
 
   if (snapsError) {

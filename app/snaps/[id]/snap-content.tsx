@@ -60,7 +60,7 @@ export default function SnapContent({ snapId }: SnapContentProps) {
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="flex flex-col items-center gap-4">
-        {imageUrl && <SnapDisplay imageUrl={imageUrl} />}
+        {imageUrl && <SnapDisplay imageUrl={imageUrl} snap={snap} />}
         <div className="text-gray-500 text-sm">
           Uploaded: {new Date(snap.created_at).toLocaleString()}
         </div>
