@@ -15,8 +15,8 @@ import { getUserGroups } from "@/lib/database/groups";
 import { uploadSnap } from "@/lib/database/snaps";
 import Image from "next/image";
 
-const WIDTH = 1920;
-const HEIGHT = 1080;
+const WIDTH = 1080;
+const HEIGHT = 1920;
 
 export default function Camera() {
   const webcamRef = useRef<Webcam>(null);
