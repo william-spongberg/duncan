@@ -13,7 +13,7 @@ PWA replacement for Snapchat. Uses Vercel, Next JS and Supabase.
 - [ ] Error handling
 - [x] Add caching
 - [ ] Add skeleton loading
-- [ ] Fix stale image cache on /snaps
+- [x] Fix stale image cache on /snaps
 - [x] Make icons at bottom bigger
 - [ ] Enable swiping between pages
 - [ ] Add text input to images by using the Canvas API. Attach text to images by adding a new column to the snaps table containing a string array. Or, if possible, save text data with image rather than attaching to table.
