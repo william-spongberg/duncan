@@ -6,7 +6,7 @@ export type Profile = {
   updated_at: string | null;
 };
 
-export type Friend = {
+export type Friendship = {
   user_id_1: string;
   user_id_2: string;
   status: "pending" | "accepted" | "blocked";
@@ -14,12 +14,12 @@ export type Friend = {
   accepted_at: string | null;
 };
 
-export type FriendWithProfile = {
-  friend: Friend;
+export type FriendShipWithProfile = {
+  friendship: Friendship;
   profile: Profile;
 }
 
-export type FriendWithStatus = Profile & {
+export type ProfileWithStatus = Profile & {
   status: "pending" | "accepted" | "blocked";
   isRequester: boolean;
 };

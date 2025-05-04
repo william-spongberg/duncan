@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/auth/client";
-import type { Profile, FriendWithProfile } from "./types";
+import type { Profile, FriendShipWithProfile } from "./types";
 import { getProfile } from "./profiles";
 import { getUserId } from "./user";
 import { getCachedFriends, setCachedFriends } from "../cache/friends";
@@ -10,7 +10,7 @@ import { getCachedFriends, setCachedFriends } from "../cache/friends";
 export async function getFriends(
   status: "pending" | "accepted" | "blocked" | "all" = "accepted",
   userId: string | null = null
-): Promise<FriendWithProfile[]> {
+): Promise<FriendShipWithProfile[]> {
   if (!userId) {
     userId = await getUserId();
   }
@@ -48,8 +48,8 @@ export async function getFriends(
     })
   );
 
-  const friendsWithProfiles: FriendWithProfile[] = friends.map((friend, i) => ({
-    friend,
+  const friendsWithProfiles: FriendShipWithProfile[] = friends.map((friendship, i) => ({
+    friendship,
     profile: profiles[i],
   }));
 
