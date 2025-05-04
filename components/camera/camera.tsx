@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   IoCameraReverseOutline,
 } from "react-icons/io5";
-import SnapReview from "./snap-review";
+import Upload from "./upload";
 
 const WIDTH = 1080;
 const HEIGHT = 1920;
@@ -32,7 +32,7 @@ export default function Camera() {
   }, []);
 
   if (imageSrc) {
-    return <SnapReview imageSrc={imageSrc} discard={discard}/>
+    return <Upload imageSrc={imageSrc} discard={discard}/>
   }
 
   return (

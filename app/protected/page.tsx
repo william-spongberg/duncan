@@ -18,7 +18,7 @@ import { Profile } from "@/lib/database/types";
 import InstallPrompt from "@/components/pwa/install";
 import PushNotificationManager from "@/components/pwa/manager";
 import { ProfilePicture } from "@/components/profile-picture";
-import { ModeToggle } from "@/components/theme-toggle";
+import { ModeToggle } from "@/components/theme/theme-toggle";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);

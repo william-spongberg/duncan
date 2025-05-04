@@ -9,15 +9,15 @@ import { getUserGroups } from "@/lib/database/groups";
 import Image from "next/image";
 import { uploadSnap } from "@/lib/database/snaps";
 
-interface SnapReviewProps {
+interface UploadProps {
   imageSrc: string;
   discard: () => void;
 }
 
-export default function SnapReview({
+export default function Upload({
   imageSrc,
   discard: discardCallback,
-}: SnapReviewProps) {
+}: UploadProps) {
   const router = useRouter();
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [groups, setGroups] = useState<Group[]>([]);
