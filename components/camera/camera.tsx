@@ -8,8 +8,8 @@ import {
 } from "react-icons/io5";
 import Upload from "./upload";
 
-const WIDTH = 1080;
-const HEIGHT = 1920;
+const WIDTH = 1920;
+const HEIGHT = 1080;
 
 export default function Camera() {
   const webcamRef = useRef<Webcam>(null);
