@@ -15,11 +15,8 @@ import { getUserGroups } from "@/lib/database/groups";
 import { uploadSnap } from "@/lib/database/snaps";
 import Image from "next/image";
 
-const videoConstraints = {
-  width: { ideal: 1920 },
-  height: { ideal: 1080 },
-  facingMode: "user",
-};
+const WIDTH = 1920;
+const HEIGHT = 1080;
 
 export default function Camera() {
   const webcamRef = useRef<Webcam>(null);
@@ -43,7 +40,7 @@ export default function Camera() {
 
   const capture = useCallback(() => {
     if (webcamRef.current) {
-      const image = webcamRef.current.getScreenshot();
+      const image = webcamRef.current.getScreenshot({width: WIDTH, height: HEIGHT});
       setImageSrc(image);
     }
   }, [webcamRef]);
@@ -160,8 +157,12 @@ export default function Camera() {
       <Webcam
         audio={false}
         ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        videoConstraints={{ ...videoConstraints, facingMode }}
+        screenshotQuality={1}
+        videoConstraints={{
+          width: { ideal: WIDTH },
+          height: { ideal: HEIGHT },
+          facingMode,
+        }}
         className="absolute inset-0 h-full w-full object-cover"
         mirrored={facingMode === "user"}
       />
