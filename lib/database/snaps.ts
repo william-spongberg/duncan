@@ -14,6 +14,23 @@ import {
   setCachedSnapUrl,
 } from "../cache/snaps";
 
+// get latest snap from a group
+export async function getLatestGroupSnap(groupId: string): Promise<Snap | null> {
+  const { data, error } = await supabase
+    .from("snaps")
+    .select("*")
+    .eq("group_id", groupId)
+    .order("created_at", { ascending: false})
+    .limit(1)
+    .single();
+
+  if (error) {
+    throw new Error("Error fetching latest snap: " + error.message);
+  }
+
+  return data;
+}
+
 // get all snaps for a group
 export async function getGroupSnaps(
   groupId: string,

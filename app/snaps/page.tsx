@@ -1,25 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getUserGroups } from "@/lib/database/groups";
-import { getSnapUrl, getGroupSnaps } from "@/lib/database/snaps";
+import { getSnapUrl, getLatestGroupSnap } from "@/lib/database/snaps";
 import type { Snap, SnapWithUrl } from "@/lib/database/types";
-import { SnapPreviews } from "@/components/snaps/snap-previews";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import { SnapDisplay } from "@/components/snaps/snap-display";
 
 export default function SnapsPage() {
-  const [groupsWithSnaps, setGroupsWithSnaps] = useState<
+  const [latestGroupSnaps, setLatestGroupSnaps] = useState<
     Array<{
       id: string;
       name: string;
-      snaps: SnapWithUrl[];
+      snap: SnapWithUrl | null;
     }>
   >([]);
   const [loading, setLoading] = useState(true);
-
-  const snapsPerGroup = 3;
 
   useEffect(() => {
     async function fetchSnaps() {
@@ -28,30 +37,30 @@ export default function SnapsPage() {
       const result: Array<{
         id: string;
         name: string;
-        snaps: SnapWithUrl[]
+        snap: SnapWithUrl | null;
       }> = [];
 
       // get snaps for each group
       if (groupsData) {
         for (const group of groupsData) {
-          const groupSnaps = await getGroupSnaps(group.id, snapsPerGroup);
-          const processedSnaps = await Promise.all(
-            (groupSnaps || []).map(async (snap: Snap) => {
-              const url = await getSnapUrl(snap.storage_object_path);
-              return {
-                ...snap,
-                url: url,
-              } as SnapWithUrl;
-            })
-          );
-          result.push({
-            id: group.id,
-            name: group.name,
-            snaps: processedSnaps,
-          });
+          const snap: Snap | null = await getLatestGroupSnap(group.id);
+          if (!snap) {
+            result.push({
+              id: group.id,
+              name: group.name,
+              snap: null,
+            });
+          } else {
+            const url = await getSnapUrl(snap.storage_object_path);
+            result.push({
+              id: group.id,
+              name: group.name,
+              snap: { ...snap, url },
+            });
+          }
         }
       }
-      setGroupsWithSnaps(result);
+      setLatestGroupSnaps(result);
       setLoading(false);
     }
 
@@ -59,13 +68,13 @@ export default function SnapsPage() {
   }, []);
 
   return (
-    <div className="min-h-svh  p-4 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Your Snaps</h1>
+    <div className="min-h-svh p-4 max-w-lg mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Snaps</h1>
       {loading ? (
         <Card className="p-6 text-center">
           <p>Loading...</p>
         </Card>
-      ) : groupsWithSnaps.length === 0 ? (
+      ) : latestGroupSnaps.length === 0 ? (
         <Card className="p-6 text-center">
           <p className="mb-4">You don&apos;t have any groups or snaps yet.</p>
           <Link href="/people">
@@ -73,27 +82,43 @@ export default function SnapsPage() {
           </Link>
         </Card>
       ) : (
-        <div className="space-y-8">
-          {groupsWithSnaps.map((group) => (
-            <div key={group.id} className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-medium">{group.name}</h2>
-                <Link href={`/groups/${group.id}`}>
-                  <Button variant="outline" size="sm">
-                    See More
-                  </Button>
-                </Link>
-              </div>
-              {group.snaps.length === 0 ? (
-                <p className="text-gray-500 text-sm">
-                  No snaps in this group yet.
-                </p>
-              ) : (
-                <SnapPreviews snaps={group.snaps} />
-              )}
-            </div>
-          ))}
-        </div>
+        <Carousel
+          opts={{
+            align: "center",
+            loop: true,
+          }}
+          orientation="vertical"
+        >
+          <CarouselContent className="-mt-1 h-[800px]">
+            {latestGroupSnaps.map((group) => (
+              <CarouselItem key={group.id} className="pt-1 md:basis-1/2">
+                <div className="p-1">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{group.name}</CardTitle>
+                      <CardDescription>
+                        <Link href={`/groups/${group.id}`}>
+                          <Button variant="outline" size="sm">
+                            See More
+                          </Button>
+                        </Link>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {!group.snap ? (
+                        <p className="text-gray-500 text-sm">
+                          No snaps in this group yet.
+                        </p>
+                      ) : (
+                        <SnapDisplay imageUrl={group.snap.url} />
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       )}
     </div>
   );
