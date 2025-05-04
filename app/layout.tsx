@@ -54,7 +54,7 @@ export default function RootLayout({
           </main>
           {/* Bottom Navigation Bar */}
           <footer className="sticky bottom-0 z-50 h-16 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <nav className="mx-auto flex h-full max-w-md items-center justify-around">
+            <nav className="mx-auto flex h-full max-w-dvw items-center justify-around">
               <Link href="/snaps">
                 <Button
                   variant="ghost"

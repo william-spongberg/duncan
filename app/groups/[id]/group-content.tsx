@@ -115,7 +115,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
 
   if (loading) {
     return (
-      <div className="min-h-svh  p-4 max-w-lg mx-auto">
+      <div className="min-h-svh p-4 max-w-lg mx-auto">
         <div className="text-center py-10">Loading group...</div>
       </div>
     );
@@ -123,7 +123,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
 
   if (!group) {
     return (
-      <div className="min-h-svh  p-4 max-w-lg mx-auto">
+      <div className="min-h-svh p-4 max-w-lg mx-auto">
         <div className="text-center py-10">Group not found</div>
         <Link href="/groups">
           <Button>Back to Groups</Button>
@@ -133,13 +133,13 @@ export default function GroupContent({ groupId }: GroupContentProps) {
   }
 
   return (
-    <div className="min-h-svh  p-4 max-w-lg mx-auto">
+    <div className="min-h-svh p-4 max-w-dvw mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{group.name}</h1>
         <div className="flex gap-2">
           <Link href="/">
             <Button variant="outline" size="sm" className="gap-1">
-              <IoCamera size={16} /> Take Snap
+              <IoCamera size={16} />
             </Button>
           </Link>
           <Button
@@ -148,7 +148,7 @@ export default function GroupContent({ groupId }: GroupContentProps) {
             className="gap-1"
             onClick={() => setShowAddMemberForm(!showAddMemberForm)}
           >
-            <IoPersonAdd size={16} /> Add Member
+            <IoPersonAdd size={16} />
           </Button>
         </div>
       </div>
