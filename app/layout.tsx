@@ -54,47 +54,47 @@ export default function RootLayout({
           </main>
           {/* Bottom Navigation Bar */}
           <footer className="sticky bottom-0 z-50 h-16 w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <nav className="mx-auto flex h-full max-w-dvw items-center justify-around">
-              <Link href="/snaps">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <IoImagesOutline className="h-6 w-6" />
-                  <span className="sr-only">Images</span>
-                </Button>
-              </Link>
-              <Link href="/">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <IoCameraOutline className="h-7 w-7" />
-                  <span className="sr-only">Camera</span>
-                </Button>
-              </Link>
-              <Link href="/people">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <IoPeopleOutline className="h-6 w-6" />
-                  <span className="sr-only">Friends</span>
-                </Button>
-              </Link>
-              <Link href="/protected">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <IoPersonOutline className="h-6 w-6" />
-                  <span className="sr-only">Profile</span>
-                </Button>
-              </Link>
+            <nav className="mx-auto flex h-full max-w-lg items-center justify-around">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+                asChild
+              >
+                <Link href="/snaps">
+                    <IoImagesOutline className="size-6" title="Images" />
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+                asChild
+              >
+                <Link href="/">
+                  <IoCameraOutline className="size-6" title="Camera" />
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+                asChild
+              >
+                <Link href="/people">
+                  <IoPeopleOutline className="size-6" title="People" />
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+                asChild
+              >
+                <Link href="/protected">
+                  <IoPersonOutline className="size-6" title="Profile" />
+                </Link>
+              </Button>
             </nav>
           </footer>
         </ThemeProvider>
