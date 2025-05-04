@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { WIDTH, HEIGHT } from "@/constants";
 import { Snap } from "@/lib/database/types";
+import { useRef, useEffect, useState } from "react";
 
 interface SnapDisplayProps {
   imageUrl: string;
@@ -14,7 +15,15 @@ export function SnapDisplay({
   snap,
   isSmall = false,
 }: SnapDisplayProps) {
-  console.log(snap.message_y_level);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    if (imageRef.current) {
+      const imageScale = imageRef.current.clientHeight / HEIGHT;
+      setScale(imageScale);
+    }
+  }, []);
 
   return (
     <>
@@ -31,6 +40,7 @@ export function SnapDisplay({
       ) : (
         <div className="relative w-fit">
           <Image
+            ref={imageRef}
             src={imageUrl}
             alt="Snap"
             width={WIDTH}
@@ -41,7 +51,7 @@ export function SnapDisplay({
             <div
               className="absolute left-1/2 w-full text-center font-bold text-white pointer-events-none text-[1.5rem]"
               style={{
-                top: snap.message_y_level || 0,
+                top: (snap.message_y_level || 0) * scale,
                 transform: "translateX(-50%)",
                 textShadow: "0 0 4px black",
               }}
