@@ -18,7 +18,7 @@ export default function Camera() {
 
   const capture = useCallback(() => {
     if (webcamRef.current) {
-      const image = webcamRef.current.getScreenshot({width: WIDTH, height: HEIGHT});
+      const image = webcamRef.current.getScreenshot();
       setImageSrc(image);
     }
   }, [webcamRef]);
