@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getSnap, getSnapUrl } from "@/lib/database/snaps";
 import type { Snap } from "@/lib/database/types";
-import { SnapDisplay } from "@/components/snap";
+import { SnapDisplay } from "@/components/snaps/snap-display";
 
 interface SnapContentProps {
   snapId: string;

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { getUserGroups } from "@/lib/database/groups";
 import { getSnapUrl, getGroupSnaps } from "@/lib/database/snaps";
 import type { Snap, SnapWithUrl } from "@/lib/database/types";
-import { SnapPreviews } from "@/components/snap";
+import { SnapPreviews } from "@/components/snaps/snap-previews";
 
 export default function SnapsPage() {
   const [groupsWithSnaps, setGroupsWithSnaps] = useState<

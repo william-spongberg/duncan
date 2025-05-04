@@ -7,9 +7,7 @@ import {
   IoCameraReverseOutline,
 } from "react-icons/io5";
 import Upload from "./upload";
-
-const WIDTH = 1920;
-const HEIGHT = 1080;
+import { WIDTH, HEIGHT } from "@/constants";
 
 export default function Camera() {
   const webcamRef = useRef<Webcam>(null);

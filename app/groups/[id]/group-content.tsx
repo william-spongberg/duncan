@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { IoPersonAdd, IoCamera } from "react-icons/io5";
 import type { Group, GroupMember, Profile, Snap } from "@/lib/database/types";
 import { useRouter } from "next/navigation";
-import { SnapPreviews } from "@/components/snap";
+import { SnapPreviews } from "@/components/snaps/snap-previews";
 import { ProfilePicture } from "@/components/profile-picture";
 type SnapWithUrl = Snap & { url: string };
 
