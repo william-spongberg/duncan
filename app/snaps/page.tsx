@@ -89,9 +89,9 @@ export default function SnapsPage() {
           }}
           orientation="vertical"
         >
-          <CarouselContent className="-mt-1 h-[800px]">
+          <CarouselContent className="h-[95dvh]">
             {latestGroupSnaps.map((group) => (
-              <CarouselItem key={group.id} className="pt-1 md:basis-1/2">
+              <CarouselItem key={group.id} className="pt-1 basis-1/2">
                 <div className="p-1">
                   <Card>
                     <CardHeader>
