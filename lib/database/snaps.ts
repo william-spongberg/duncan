@@ -13,9 +13,7 @@ import {
 } from "../cache/snaps";
 
 // get latest snap for a group
-export async function getLatestGroupSnaps(
-  groupId: string
-): Promise<Snap[]> {
+export async function getLatestGroupSnaps(groupId: string): Promise<Snap[]> {
   const { data, error } = await supabase
     .from("snaps")
     .select("*")
@@ -61,8 +59,6 @@ export async function getGroupSnaps(
 export async function uploadSnap(
   groupId: string,
   imageSrc: string,
-  message?: string | null,
-  messageYLevel?: number | null,
   userId?: string
 ): Promise<void> {
   if (!userId) {
@@ -100,8 +96,6 @@ export async function uploadSnap(
     group_id: groupId,
     uploader_user_id: userId,
     storage_object_path: filePath,
-    message,
-    message_y_level: messageYLevel,
   });
 
   if (snapsError) {
@@ -138,10 +132,7 @@ export async function getSnap(snapId: string): Promise<Snap> {
 }
 
 export async function deleteSnap(snapId: string): Promise<void> {
-  const { error } = await supabase
-    .from("snaps")
-    .delete()
-    .eq("id", snapId);
+  const { error } = await supabase.from("snaps").delete().eq("id", snapId);
 
   if (error) {
     throw new Error("Error fetching snap: " + error.message);
