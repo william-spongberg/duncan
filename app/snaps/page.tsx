@@ -104,7 +104,7 @@ export default function SnapsPage() {
                           </CardHeader>
                           <CardContent>
                             <Link href={`/snaps/${snap.id}`}>
-                              <SnapDisplay imageUrl={snap.url} snap={snap} />
+                              <SnapDisplay imageUrl={snap.url} />
                             </Link>
                           </CardContent>
                         </Card>

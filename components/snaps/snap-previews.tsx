@@ -14,7 +14,7 @@ export function SnapPreviews({ snaps }: SnapPreviewsProps) {
           href={`/snaps/${snap.id}`}
           className="relative aspect-square rounded-md overflow-hidden"
         >
-          <SnapDisplay imageUrl={snap.url} snap={snap} isSmall={true} />
+          <SnapDisplay imageUrl={snap.url} isSmall={true} />
         </Link>
       ))}
     </div>
